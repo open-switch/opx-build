@@ -1,0 +1,41 @@
+
+FROM debian:jessie
+
+RUN echo "deb http://httpredir.debian.org/debian jessie main contrib non-free" > /etc/apt/sources.list
+RUN echo "deb-src http://httpredir.debian.org/debian jessie main contrib non-free" >> /etc/apt/sources.list
+RUN echo "deb http://httpredir.debian.org/debian-security/ jessie/updates main contrib non-free" >> /etc/apt/sources.list
+RUN echo "deb-src http://httpredir.debian.org/debian-security/ jessie/updates main contrib non-free" >> /etc/apt/sources.list
+
+RUN apt-get update 
+RUN apt-get upgrade -y
+
+#Some general build artifiacts
+RUN apt-get update && apt-get install -y bison build-essential byacc cmake cpio dh-make dh-buildinfo dh-make-perl dh-python  dh-systemd doxygen dpatch expat exuberant-ctags fakeroot flex g++ gcc git iptables-dev libdb-dev libexpat1-dev libglib2.0-dev libhiredis-dev libnl-3-dev libnl-route-3-dev libpam-dev libpcap-dev libpcre3 libpcre3-dev libreadline-dev libtool-bin libxml2-dev linux-headers-amd64 make pbuilder python python-pip python2.7-dev quagga redis-server swig vim libssl-dev libfuse-dev fuse libsystemd-dev libsqlite3-dev sqlite3 apt-transport-https
+
+
+# For Jenkins static analysis, unit testing and code coverage
+RUN  apt-get update && apt-get install -y cppcheck clang pylint python-pytest gcovr python-pytest=2.6.3* python-pytest-cov python-parse
+
+# For linux build
+RUN apt-get update && apt-get install -y bc fakeroot build-essential devscripts quilt stgit
+RUN apt-get update && apt-get -y build-dep linux
+
+# For build image
+RUN apt-get update && apt-get install -y cpio squashfs-tools zip
+
+# For broadcom sdk build
+RUN apt-get update && apt-get install -y linux-compiler-gcc-4.8-x86 linux-kbuild-3.16
+
+# For broadcom kernel modules
+RUN apt-get update && apt-get install -y  dh-autoreconf
+
+# Add pbuilder
+RUN apt-get install -y pbuilder debootstrap devscripts
+
+# Add git-buildpackage
+RUN apt-get install -y git-buildpackage
+
+# Modify pbuilderrc
+RUN sed -i '$ a\OTHERMIRROR=\"deb http://10.14.1.29/opx jessie main"' /etc/pbuilderrc
+#RUN sed -i '$ a\OTHERMIRROR=\"deb http://artifactory.force10networks.com/opx jessie main"' /etc/pbuilderrc
+RUN sed -i '$ a\ALLOWUNTRUSTED=yes' /etc/pbuilderrc

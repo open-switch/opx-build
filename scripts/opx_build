@@ -1,0 +1,102 @@
+#!/bin/bash 
+#
+# Copyright (c) 2015 Dell Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# THIS CODE IS PROVIDED ON AN #AS IS* BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#  LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+# FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+#
+# See the Apache Version 2.0 License for specific language governing
+# permissions and limitations under the License.
+#
+
+#
+# Copyright (c) 2015 Dell Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# THIS CODE IS PROVIDED ON AN #AS IS* BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#  LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+# FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+#
+# See the Apache Version 2.0 License for specific language governing
+# permissions and limitations under the License.
+#
+
+DOCKER_IMAGE=docker-opx
+
+ROOT_FOLDER=$(dirname $PWD)
+RELATIVE_FOLDER=$(basename $PWD)
+
+DOCKER_BUILD=$ROOT_FOLDER
+
+DOCKER_TOOLS=$(realpath  $(dirname $0))
+DOCKER_CONFIG=$(realpath  $(dirname $0)/../config)
+
+BUILDER=deb_builder
+
+_docker_image_exists=$(docker images | grep $DOCKER_IMAGE | wc -w )
+
+if [ $# == 0 ] ; then
+  echo " 
+This tool will invole the debian automke build in a docker container $DOCKER_IMAGE.  The $DOCKER_IMAGE docker image should be already configured.  
+
+$DOCKER_IMAGE: 
+The inputs to this tool are:
+
+Environment Variables:    
+DEB_BINS=[path to .deb]  (default to ..)
+
+$0 [--it] --dpkg [ package package ... ] --apt-get [ package package ... ] [ --keep-def-sources ] -- [ target target ] 
+  --it     Compile interactively in the docker build environment. 
+           ie. build manually 
+  --dpkg    Indicate that the following packages will be .deb files (or prefixes) that are 
+            installed into the build environment using the DEB_BINS path
+  --apt     Indicate that the following packages are files that will be installed via
+            apt-get and the SONiC binary repository.  
+  --keep-def-sources  if using apt to install packages, keep the default debian sources list 
+  --        This marks the start of the actual target in the container
+
+  target    This is a valid debian rules target
+"
+
+  exit 1
+
+fi
+
+if [ "$_docker_image_exists"b = 0b ] ; then
+  echo "$DOCKER_IMAGE is not initialized."
+  exit 1
+fi
+
+#move to relative folder
+if [ ! -d debian ] ; then
+  echo "Need to be in a debian build environment"
+  exit 1
+fi
+
+ENTRY_POINT="--entrypoint /tools/$BUILDER"
+ENTRY_ARGS="$DOCKER_BUILD/$RELATIVE_FOLDER $*"
+
+#environment for compiling and possibly simple testing environment 
+#possibly used to validate a debian config before configuring an automated environment
+if [ "$1"b = "--itb" ] ; then
+  shift
+  ENTRY_POINT="-it"
+  ENTRY_ARGS="/bin/bash"
+  ENTRY_ENV="-w $PWD"
+fi
+
+_DOCK="docker run $ENTRY_ENV --rm -v $DOCKER_TOOLS:/tools -v $DOCKER_CONFIG:/tools-config -v $ROOT_FOLDER:$DOCKER_BUILD" 
+
+$_DOCK ${ENTRY_POINT} ${DOCKER_IMAGE} ${ENTRY_ARGS}
+exit $?
+
