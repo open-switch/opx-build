@@ -12,7 +12,6 @@ RUN apt-get upgrade -y
 #Some general build artifiacts
 RUN apt-get update && apt-get install -y bison build-essential byacc cmake cpio dh-make dh-buildinfo dh-make-perl dh-python  dh-systemd doxygen dpatch expat exuberant-ctags fakeroot flex g++ gcc git iptables-dev libdb-dev libexpat1-dev libglib2.0-dev libhiredis-dev libnl-3-dev libnl-route-3-dev libpam-dev libpcap-dev libpcre3 libpcre3-dev libreadline-dev libtool-bin libxml2-dev linux-headers-amd64 make pbuilder python python-pip python2.7-dev quagga redis-server swig vim libssl-dev libfuse-dev fuse libsystemd-dev libsqlite3-dev sqlite3 apt-transport-https
 
-
 # For Jenkins static analysis, unit testing and code coverage
 RUN  apt-get update && apt-get install -y cppcheck clang pylint python-pytest gcovr python-pytest=2.6.3* python-pytest-cov python-parse
 
@@ -35,7 +34,3 @@ RUN apt-get install -y pbuilder debootstrap devscripts
 # Add git-buildpackage
 RUN apt-get install -y git-buildpackage
 
-# Modify pbuilderrc
-RUN sed -i '$ a\OTHERMIRROR=\"deb http://10.14.1.29/opx jessie main"' /etc/pbuilderrc
-#RUN sed -i '$ a\OTHERMIRROR=\"deb http://artifactory.force10networks.com/opx jessie main"' /etc/pbuilderrc
-RUN sed -i '$ a\ALLOWUNTRUSTED=yes' /etc/pbuilderrc
