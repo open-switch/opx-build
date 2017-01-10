@@ -59,21 +59,21 @@ To get the source files for the Openswitch (opx*) repos, run the commands in an 
     repo sync
 ```
 
-The **repo sync** command downloads all of the source files that you need to build the openswitch. In addition to the source files, you will also need some binary libraries for the SAI. The SAI is currently not open sourced entirely, as it is based on Broadcom's SDK and there is no open source SAI implementation from Broadcom at this time.
+The **repo sync** command downloads all of the source files that you need to build the openswitch. In addition to the source files, you will also need some binary libraries for the SAI. The SAI is currently not open sourced entirely, as it is based on Broadcom's SDK and no open source SAI implementation available from Broadcom at this time.
 
 All the build scripts are found in the [opx_build repo](https://github.com/open-switch/opx-build) and will be downloaded as part of the above **repo sync**.
 
 Openswitch Docker environment
 ----------------------------
-To setup your Docker OPX image, use the script in the *opx-build/scripts* folder called **opx_setup**. This script builds a docker container called **docker-opx** which will be used by the build scripts:
+To setup your Docker OPX image, use the script in the *opx-build/scripts* folder called **opx_setup**. This script builds a docker container called **docker-opx**, which will be used by the build scripts:
 ```
     cd opx-build/scripts/
     opx_setup
 ```
 
-Build a single repository
+Build single repository
 -------------------------
-Goto root directory, where you installed OPX repos and run OPX Docker container. 
+Goto root directory, where you have installed OPX repos and run OPX Docker container. 
 ```
     cd ~/dev/opx
     docker run --privileged -i -t -v ${PWD}:/mnt docker-opx:latest
@@ -97,6 +97,7 @@ TBD
 Installation
 ------------
 Once all of the repos have been built, you can install the created ONIE Debian x86_64 image. You can then install all of the build packages, along with the other Debian files you downloaded earlier in the root directory.
-**TBD**
+
+-TBD
 
 (c) Dell 2016
