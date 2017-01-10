@@ -5,15 +5,14 @@ Get Openswitch
 ---------------
 There are two ways to get image:
 
-- **Download and install binaries** - see [installation](#Installation) for complete information, **or**
+- **Download and install binaries** - TBD, **or**
 - **Build from scratch** - see the step-by-step instructions below to build the project.
  
 Build environment recommendations
 ---------------------------------
 - Intel multi-core
-- Ubuntu 14.04 or later (desktop edition with Python installed)
+- Ubuntu 16.04 or later (desktop edition with Python installed)
 - 20G available free disk space
-- bash (most shell commands refer to bash commands - we like csh as well)
 
 The build environment
 ----------------------
@@ -21,7 +20,7 @@ The build environment
 
 Updated environment: `sudo apt-get update`
 - GIT: `sudo apt-get install git`
-- Repo: See http://source.android.com/source/downloading.html to install the `repo`.
+- Repo: See http://source.android.com/source/downloading.html to install the **repo** tool.
 ```
     Make sure you have a bin/ directory in your home directory and that it is included in your path:
     $ mkdir ~/bin
@@ -33,8 +32,12 @@ Updated environment: `sudo apt-get update`
 - apt-utils: `sudo apt-get install apt-utils`
 - See [Docker environment setup guide](https://docs.docker.com/engine/installation/linux/ubuntulinux/) for complete information.
 ```
-    sudo apt-get install docker.io
-    sudo apt-get install docker-engine
+    sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual
+    sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
+    sudo apt-get update
+    apt-cache policy docker-engine
+    sudo apt-get install -y docker-engine
     sudo service docker start
 ```
 - To avoid running docker commands as root (with sudo):
@@ -56,28 +59,20 @@ To get the source files for the Openswitch (opx*) repos, run the commands in an 
     repo sync
 ```
 
-The `repo sync` command downloads all of the source files that you need to build the openswitch. In addition to the source files, you will also need some binary libraries for the SAI. The SAI is currently not open sourced entirely, as it is based on Broadcom's SDK and there is no open source SAI implementation from Broadcom at this time.
+The **repo sync** command downloads all of the source files that you need to build the openswitch. In addition to the source files, you will also need some binary libraries for the SAI. The SAI is currently not open sourced entirely, as it is based on Broadcom's SDK and there is no open source SAI implementation from Broadcom at this time.
 
-All the build scripts are found in the [opx_build repo](https://github.com/open-switch/opx-build) and will be downloaded as part of the above `repo sync`.
-
-Build the code
------------------
-Setup your path to include the *sonic-build-tools/scripts* folder (if you plan to run this command often, you could optionally add it to the .bashrc):
-```
-    cd opx-build/scripts
-    export PATH=$PATH:$PWD
-```
+All the build scripts are found in the [opx_build repo](https://github.com/open-switch/opx-build) and will be downloaded as part of the above **repo sync**.
 
 Openswitch Docker environment
 ----------------------------
-To setup your Docker OPX image, use the script in the *opx-build/scripts* folder called `opx_setup`. This script builds a docker container called `docker-opx` which will be used by the build scripts:
+To setup your Docker OPX image, use the script in the *opx-build/scripts* folder called **opx_setup**. This script builds a docker container called **docker-opx** which will be used by the build scripts:
 ```
     cd opx-build/scripts/
     opx_setup
 ```
 
-Build one repository
------------------------
+Build a single repository
+-------------------------
 Goto root directory, where you installed OPX repos and run OPX Docker container. 
 ```
     cd ~/dev/opx
@@ -95,9 +90,13 @@ To build a single repo, goto the repo and build. For example, to build opx_loggi
     root@077f7b30f8ef:/mnt/opx-logging# git-buildpackage --git-dist=jessie  --git-ignore-branch --git-pbuilder
 ```
 
+Build ALL repositories
+----------------------
+TBD
+
 Installation
 ------------
 Once all of the repos have been built, you can install the created ONIE Debian x86_64 image. You can then install all of the build packages, along with the other Debian files you downloaded earlier in the root directory.
-
+**TBD**
 
 (c) Dell 2016
