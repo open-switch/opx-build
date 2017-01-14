@@ -36,8 +36,12 @@ if [ "${ID}b" = b ] ; then
 
   docker build -t docker-opx:base -f opx_build_Dockerfile .
 
+  # Create the pbuilder chroot. For unexplained reasons, the apt-utils
+  # package is not installed in the chroot even though it is listed in
+  # EXTRAPACKAGES in /etc/pbuilderrc. However, it is installed with a
+  # subsequent "git-pbuilder update"
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base git-pbuilder create
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base sh -c 'git-pbuilder create; git-pbuilder update'
   docker commit --change 'CMD ["bash"]' `cat ${CIDFILE}` docker-opx:stamp1
   docker rm `cat ${CIDFILE}`
 

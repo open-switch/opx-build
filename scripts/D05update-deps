@@ -1,0 +1,3 @@
+#! /bin/bash
+(cd /var/cache/pbuilder/result && apt-ftparchive packages . > Packages)
+apt-get update
