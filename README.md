@@ -26,7 +26,7 @@ To get the source files for the OpenSwitch OPX repositories, run the commands in
 
 The `repo sync` command downloads all of the source files that you need to build OpenSwitch. In addition to the source files, you will also need some binary libraries for the SAI. The SAI is currently not open sourced entirely, as it is based on Broadcom's SDK and there is no open source SAI implementation from Broadcom at this time.
 
-All build scripts are find in the `opx_build` repo and will be downloaded as part of the above `repo sync`.
+All build scripts are found in the [opx-build](https://github.com/open-switch/opx-build) repo and will be downloaded as part of the above `repo sync`.
 
 ## Build the code
 Setup your path to include _opx-build/scripts_ folder (if you plan to run this command often, you could optionally add it to the `.bashrc`):
