@@ -36,12 +36,9 @@ if [ "${ID}b" = b ] ; then
 
   docker build -t docker-opx:base -f opx_build_Dockerfile .
 
-  # Create the pbuilder chroot. For unexplained reasons, the apt-utils
-  # package is not installed in the chroot even though it is listed in
-  # EXTRAPACKAGES in /etc/pbuilderrc. However, it is installed with a
-  # subsequent "git-pbuilder update"
+  # Create the pbuilder chroot.
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base sh -c 'git-pbuilder create; git-pbuilder update'
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base git-pbuilder create
   docker commit --change 'CMD ["bash"]' `cat ${CIDFILE}` docker-opx:stamp1
   docker rm `cat ${CIDFILE}`
 
@@ -49,6 +46,14 @@ if [ "${ID}b" = b ] ; then
   # install it in the pbuilder chroot.
   rm -f ${CIDFILE}
   docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:stamp1 sh -c 'echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
+  docker commit --change 'CMD ["bash"]' `cat ${CIDFILE}` docker-opx:stamp2
+  docker rm `cat ${CIDFILE}`
+
+  # Update pbuilder chroot to support local packages. For unexplained
+  # reasons, pyang installation fails if these settings are active at
+  # the time.
+  rm -f ${CIDFILE}
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:stamp2 sh -c '(echo "OTHERMIRROR=\"deb [trusted=yes] file:///var/cache/pbuilder/result ./\""; echo "HOOKDIR=/var/cache/pbuilder/hook.d"; echo "BINDMOUNTS=/var/cache/pbuilder/result"; echo "EXTRAPACKAGES=apt-utils") >> /etc/pbuilderrc; git-pbuilder update --override-config'
   docker commit --change 'CMD ["bash"]' `cat ${CIDFILE}` docker-opx:latest
   docker rm `cat ${CIDFILE}`
 
@@ -56,6 +61,7 @@ if [ "${ID}b" = b ] ; then
   rm -f ${CIDFILE}
   docker rmi docker-opx:base
   docker rmi docker-opx:stamp1
+  docker rmi docker-opx:stamp2
 fi
 
 echo "OPX Docker Image"
