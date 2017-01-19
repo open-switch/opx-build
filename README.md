@@ -46,10 +46,6 @@ Go to the root directory where you installed the OPX repositories and run the OP
     cd ~/dev/opx
     docker run --privileged -i -t -v ${PWD}:/mnt docker-opx:latest
 
-Setup the builder environment inside the Docker container:
-
-    root@077f7b30f8ef:/# DIST=jessie git-pbuilder create
-
 To build a single repository, go to the repository and build. For example, to build `opx-logging`:
 
     root@077f7b30f8ef:/# cd /mnt/opx-logging
