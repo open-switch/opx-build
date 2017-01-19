@@ -26,7 +26,7 @@ To get the source files for the OpenSwitch OPX repositories, run the commands in
 
 The `repo sync` command downloads all of the source files that you need to build OpenSwitch. In addition to the source files, you will also need some binary libraries for the SAI. The SAI is currently not open sourced entirely, as it is based on Broadcom's SDK and there is no open source SAI implementation from Broadcom at this time.
 
-All build scripts are find in the `opx_build` repo and will be downloaded as part of the above `repo sync`.
+All build scripts are found in the `opx-build` repo and will be downloaded as part of the above `repo sync`.
 
 ## Build the code
 Setup your path to include _opx-build/scripts_ folder (if you plan to run this command often, you could optionally add it to the `.bashrc`):
@@ -50,7 +50,7 @@ Setup the builder environment inside the Docker container:
 
     root@077f7b30f8ef:/# DIST=jessie git-pbuilder create
 
-To build a single repository, go to the repository and build. For example, to build `opx_logging`:
+To build a single repository, go to the repository and build. For example, to build `opx-logging`:
 
     root@077f7b30f8ef:/# cd /mnt/opx-logging
     root@077f7b30f8ef:/mnt/opx-logging# git-buildpackage --git-dist=jessie --git-ignore-branch --git-pbuilder
