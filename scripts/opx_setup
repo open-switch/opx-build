@@ -37,31 +37,23 @@ if [ "${ID}b" = b ] ; then
   docker build -t docker-opx:base -f opx_build_Dockerfile .
 
   # Create the pbuilder chroot.
-  rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base git-pbuilder create
-  docker commit --change 'CMD ["bash"]' `cat ${CIDFILE}` docker-opx:stamp1
-  docker rm `cat ${CIDFILE}`
+  #
+  # Since pyang is not (yet) available as a debian package, install it
+  # in the pbuilder chroot.
+  #
+  # There is an issue with docker/kernel/overlayfs/pbuilder: directory
+  # renames fail with a cross-device link error if the directory is on
+  # a lower layer. Work around this by combining all steps of chroot
+  # creation in one docker run invocation.
 
-  # pyang is not (yet) available as a debian package, these steps
-  # install it in the pbuilder chroot.
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:stamp1 sh -c 'echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
-  docker commit --change 'CMD ["bash"]' `cat ${CIDFILE}` docker-opx:stamp2
-  docker rm `cat ${CIDFILE}`
-
-  # Update pbuilder chroot to support local packages. For unexplained
-  # reasons, pyang installation fails if these settings are active at
-  # the time.
-  rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:stamp2 sh -c '(echo "OTHERMIRROR=\"deb [trusted=yes] file:///var/cache/pbuilder/result ./\""; echo "HOOKDIR=/var/cache/pbuilder/hook.d"; echo "BINDMOUNTS=/var/cache/pbuilder/result"; echo "EXTRAPACKAGES=apt-utils") >> /etc/pbuilderrc; git-pbuilder update --override-config'
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
   docker commit --change 'CMD ["bash"]' `cat ${CIDFILE}` docker-opx:latest
   docker rm `cat ${CIDFILE}`
 
   # cleanup
   rm -f ${CIDFILE}
   docker rmi docker-opx:base
-  docker rmi docker-opx:stamp1
-  docker rmi docker-opx:stamp2
 fi
 
 echo "OPX Docker Image"
