@@ -44,12 +44,12 @@ To setup your Docker OPX image, use the script in the _opx-build/scripts_ folder
 Go to the root directory where you installed the OPX repositories and run the OPX Docker container:
 
     cd ~/dev/opx
-    docker run --privileged -i -t -v ${PWD}:/mnt docker-opx:latest
+    ./opx-build/scripts/opx_run
 
 To build a single repository, go to the repository and build. For example, to build `opx-logging`:
 
-    root@077f7b30f8ef:/# cd /mnt/opx-logging
-    root@077f7b30f8ef:/mnt/opx-logging# git-buildpackage --git-dist=jessie --git-ignore-branch --git-pbuilder
+    opx-dev@077f7b30f8ef:/# cd /mnt/opx-logging
+    opx-dev@077f7b30f8ef:/mnt/opx-logging# git-buildpackage --git-dist=jessie --git-ignore-branch --git-pbuilder
 
 ## Build all repositories
 Issue the `opx_build_all` command from the root directory to build all repos and create packages in the same root directory.
