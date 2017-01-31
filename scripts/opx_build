@@ -53,6 +53,10 @@ repos=( opx-logging
 	opx-tmpctl
 	)
 
+if [ ! -z "$1" ] && [ "$1" != "all" ]; then
+    repos=( "$@" )
+fi
+
 # Use temporary output directory isolate the output of each build
 export GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
 trap "rm -rf ${GIT_PBUILDER_OUTPUT_DIR}" EXIT
