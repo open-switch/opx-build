@@ -38,7 +38,7 @@ Setup your path to include _opx-build/scripts_ folder (if you plan to run this c
 To setup your Docker OPX image, use the script in the _opx-build/scripts_ folder called `opx_setup`. This script builds a Docker container called `docker-opx` which will be used by the build scripts:
 
     cd opx-build/scripts/
-    opx_setup
+    ./opx_setup
 
 ## Build one repository
 Go to the root directory where you installed the OPX repositories and run the OPX Docker container:
