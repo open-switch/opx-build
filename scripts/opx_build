@@ -17,7 +17,15 @@
 
 set -e
 
-DIST=jessie
+DIST=$(lsb_release --codename --short)
+case $DIST in
+    xenial)
+        GIT_BUILDPACKAGE="gbp buildpackage"
+        ;;
+    *)
+        GIT_BUILDPACKAGE="git-buildpackage"
+        ;;
+esac
 
 # Define list of repositories in dependency order.
 # 
@@ -64,7 +72,7 @@ trap "rm -rf ${GIT_PBUILDER_OUTPUT_DIR}" EXIT
 for r in ${repos[*]}; do
     (
 	cd $r
-	git-buildpackage --git-dist=$DIST --git-pbuilder --git-ignore-branch --git-ignore-new
+	$GIT_BUILDPACKAGE --git-dist=$DIST --git-pbuilder --git-ignore-branch --git-ignore-new
 
 	sudo cp ${GIT_PBUILDER_OUTPUT_DIR}/*.deb /var/cache/pbuilder/result
 	cp ${GIT_PBUILDER_OUTPUT_DIR}/*.deb ..
