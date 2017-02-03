@@ -1,7 +1,7 @@
 FROM debian:jessie
 RUN apt-get update 
 RUN apt-get upgrade -y
-RUN apt-get install -y git-buildpackage dh-autoreconf dh-systemd vim wget
+RUN apt-get install -y git-buildpackage dh-autoreconf dh-systemd vim wget lsb-release
 
 # Install gosu utility for use in entrypoint script
 #
