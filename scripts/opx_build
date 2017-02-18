@@ -36,8 +36,6 @@ repos=( opx-logging
 	opx-nas-ndi-api
 	opx-nas-ndi
 	opx-nas-acl
-	opx-nas-platform-s6000
-	opx-nas-platform-vm
 	opx-nas-interface
 	opx-nas-l2
 	opx-nas-l3
@@ -62,6 +60,10 @@ export GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
 trap "rm -rf ${GIT_PBUILDER_OUTPUT_DIR}" EXIT
 
 for r in ${repos[*]}; do
+    if [ ! -d $r ]; then
+	    continue
+    fi
+
     (
 	cd $r
 	gbp buildpackage --git-dist=$DIST --git-pbuilder --git-ignore-branch --git-ignore-new
