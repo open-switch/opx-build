@@ -1,7 +1,7 @@
 # opx-build
-This repository contains build information for OpenSwitch OPX.
+This repository contains build information for OpenSwitch OPX Base.
 
-## Get OpenSwitch
+## Get OpenSwitch Base
 There are two ways to get the image:
 - **Download and install binaries** — see Installation below for complete information, **or**
 - **Build from scratch** — see the step-by-step instructions below to build the project.
@@ -19,7 +19,7 @@ Updated environment: `sudo apt-get update`
 - Docker: `sudo apt-get install docker.io`
 
 ## Clone the source code
-To get the source files for the OpenSwitch OPX repositories, run the commands in an empty directory (root directory). For example: _~/dev/opx/_:
+To get the source files for the OpenSwitch OPX Base repositories, run the commands in an empty directory (root directory). For example: _~/dev/opx/_:
 
     repo init -u https://github.com/open-switch/opx-manifest.git
     repo sync
@@ -60,6 +60,6 @@ Issue the `opx_build all` command from the root directory to build all repos and
 ## Installation
 Once all of the repositories have been built, you can install the created ONIE Debian x86_64 image. You can then install all of the build packages, along with other Debian files you downloaded earlier in the root directory.
 
-See [Install OpenSwitch OPX on Dell S6000 Platform](https://github.com/open-switch/opx-docs/wiki/Install-OPX-on-Dell-S6000-ON-platform) for complete information.
+See [Install OpenSwitch OPX Base on Dell S6000 Platform](https://github.com/open-switch/opx-docs/wiki/Install-OPX-Base-on-Dell-S6000-ON-platform) for complete information.
 
 (c) 2017 Dell
