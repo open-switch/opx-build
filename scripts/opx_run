@@ -15,4 +15,4 @@
 # permissions and limitations under the License.
 #
 
-docker run --rm --privileged -i -t -e LOCAL_UID=$(id -u ${USER}) -e LOCAL_GID=$(id -g ${USER}) -v ${PWD}:/mnt docker-opx:latest "$@"
+docker run --rm --privileged -i -e LOCAL_UID=$(id -u ${USER}) -e LOCAL_GID=$(id -g ${USER}) -v ${PWD}:/mnt docker-opx:latest "$@"
