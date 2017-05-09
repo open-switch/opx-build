@@ -15,4 +15,9 @@
 # permissions and limitations under the License.
 #
 
-docker run --rm --privileged -i -e LOCAL_UID=$(id -u ${USER}) -e LOCAL_GID=$(id -g ${USER}) -v ${PWD}:/mnt docker-opx:latest "$@"
+INTERACTIVE="-it"
+if [ $# -ge 1 ] && [ "$1" = "/bin/bash" ]; then
+    # Do not allocate pseudo-tty if running command directly
+    INTERACTIVE="-i"
+fi
+docker run --rm --privileged "$INTERACTIVE" -e LOCAL_UID=$(id -u ${USER}) -e LOCAL_GID=$(id -g ${USER}) -v ${PWD}:/mnt docker-opx:latest "$@"
