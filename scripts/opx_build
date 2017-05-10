@@ -22,7 +22,8 @@ DIST=$(lsb_release --codename --short)
 # Define list of repositories in dependency order.
 # 
 # TODO: read the debian/control files and compute the dependency graph.
-repos=( opx-logging
+repos=( opx-core
+	opx-logging
 	opx-common-utils
 	opx-cps
 	opx-base-model
@@ -61,7 +62,16 @@ trap "rm -rf ${GIT_PBUILDER_OUTPUT_DIR}" EXIT
 
 for r in ${repos[*]}; do
     if [ ! -d $r ]; then
-	    continue
+        continue
+    fi
+
+    if [ ${r%/} == "opx-core" ]; then
+        (
+            cd $r
+            equivs-build control
+            mv *.deb ..
+        )
+        continue
     fi
 
     (
