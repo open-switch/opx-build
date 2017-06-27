@@ -1,0 +1,34 @@
+#! /bin/bash
+
+# There is a bug in dpkg, fixed in later versions
+#  (need to identify that version 1.15.6?)
+#  for now remove
+mv /var/lib/dpkg/statoverride /var/lib/dpkg/stato
+touch /var/lib/dpkg/statoverride
+
+# specify non-interactive operation required
+export DEBIAN_FRONTEND=noninteractive
+
+# prevent any daemon installations from starting
+#  those daemons
+cat > /usr/sbin/policy-rc.d << __EOF__
+#! /bin/sh
+
+exit 101
+__EOF__
+
+# Execution is key (Thanks JT)
+chmod a+x /usr/sbin/policy-rc.d
+
+
+dpkg -R --install --force-all --pre-invoke='echo PRE: ${DPKG_HOOK_ACTION}' --post-invoke='echo POST: ${DPKG_HOOK_ACTION}' /var/cache/apt/archives
+
+# delete policy-rc.d script created above
+rm -f /usr/sbin/policy-rc.d
+
+# restore the original statoverride file, removed
+#  above to prevent error
+rm -f /var/lib/dpkg/statoverride
+mv /var/lib/dpkg/stato /var/lib/dpkg/statoverride
+
+exit 0

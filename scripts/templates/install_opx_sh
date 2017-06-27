@@ -1,0 +1,134 @@
+#!/bin/bash -x
+# Install OPX for the given platform
+# Usage: $0 <platform-type> [vm-flavor]
+# This must be run within a chroot in order to ensure that the package
+# installs are limited to the chroot
+
+OPX_PLATFORM="$1"
+OPX_VM_FLAVOR="$2"
+
+if [ ! -n "$OPX_PLATFORM" ]
+then
+    echo "ERROR: Must specify platform for installation!"
+    exit 1
+fi
+
+# # Save stdout and stderr file descriptors
+# exec 6>&1
+# exec 7>&2
+
+# # Redirect stdout and stderr to /root/install.log
+# exec 1>/root/install.log
+# exec 2>/root/install.log
+
+# # Restore stdout and stderr on exit
+# trap 'exec 1>&6 ; exec 2>&7' EXIT
+
+# Run hooks for installation
+HOOKSDIR=/root/hooks
+run_hooks()
+{
+    local stage=$1
+    shopt -s nullglob
+    for hook in $HOOKSDIR/*.${stage}.sh
+    do
+        [ -x $hook ] && $hook
+    done
+    shopt -u nullglob
+}
+
+# specify non-interactive operation required
+export DEBIAN_FRONTEND=noninteractive
+
+# Prevent any daemon installations from starting those daemons
+cat > /usr/sbin/policy-rc.d << EOF
+#!/bin/sh
+
+exit 101
+EOF
+
+chmod +x /usr/sbin/policy-rc.d
+
+# Create the /proc and /sys directories
+# This will prevent any "chdir /proc failed" style messages
+mkdir -p /proc
+mkdir -p /sys
+
+# Run any pre install hooks
+run_hooks preinst
+
+# For every installed package in the system, run dpkg-reconfigure
+#   dpkg -l -- list all packages in the system (typically installed)
+#   awk     -- Search for all lines beginning with ii (installed)
+#              and print the package name
+#   sed     -- Strip off any architecture component
+#   xargs   -- call dpkg-reconfigure on each package individually
+dpkg -l | awk '/^ii/ { print $2 }' | sed 's/:.*$//' | xargs -n1 dpkg-reconfigure
+
+# Update the APT database
+apt-get update
+
+# Abort in case of any errors during installation
+set -e
+
+{% for pks in package_sets %}
+
+# {{ pks.name }}
+{%- if pks.platform %}
+# Platform {{ pks.platform }}
+if [ "$OPX_PLATFORM" == "{{ pks.platform }}" ]
+then
+  {%- if pks.flavor %}
+  # VM Flavor {{ pks.flavor }}
+  if [ ! -n "$OPX_VM_FLAVOR" ]
+  then
+    echo "ERROR: Installing a VM platform, but VM flavor is not defined!" >&7
+    exit 1
+  fi
+  if [ "$OPX_VM_FLAVOR" == "{{ pks.flavor }}" ]
+  then
+  {%- endif %}
+{%- endif %}
+
+    apt-get install -y --force-yes {{ pks.packages | join(' ') }}
+
+{%- if pks.platform %}
+  {%- if pks.flavor %}
+  fi
+  {%- endif %}
+fi
+{%- endif %}
+{%- endfor %}
+
+# Create OPX Version file
+cat > /etc/OPX-release-version << EOF
+COPYRIGHT="{{ release.copyright }}"
+OS_NAME="Dell EMC Networking {{ release.name }}"
+OS_VERSION="{{ release.version }}"
+PLATFORM="$OPX_PLATFORM_DISPLAY_NAME"
+ARCHITECTURE="{{ release.architecture }}"
+INTERNAL_BUILD_ID="{{ release.bp_description }} {{ release.bp_version }}"
+BUILD_VERSION="{{release.version}}({{release.build_num}})"
+BUILD_DATE="{{ release.build_date }}"
+INSTALL_DATE="$(date -Isec)"
+EOF
+
+# Run any post install hooks
+run_hooks postinst
+rm -rf $HOOKSDIR
+
+# Finished installation, remove all deb files and installer remnants
+set +e
+
+rm -f /usr/sbin/policy-rc.d
+rm -f /etc/apt/sources.list.d/installer.list
+
+apt-get clean
+apt-get update
+
+# Protect the install log
+chmod 400 /root/install.log
+
+rm -f $0
+exit 0
+

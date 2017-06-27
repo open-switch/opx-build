@@ -1,0 +1,42 @@
+{# header #}
+
+
+Build Number      {{buildID}} 
+Last Good Build   {{last_good}} 
+
+Installers available  {{n_installers}}.  {{passed}} smoketests passed,    {{failed}} failed,     {{notest}} not tested.
+    
+ Build Date       {{build_date}} 
+{% if branch        != "" %} Branch           {{branch}} {% endif %}
+{% if build_comment != "" %} Comment          {{build_comment}} {% endif %}
+ Bamboo Log       https://bamboo.force10networks.com/browse/{{build_planKey}}-{{buildID}}
+
+ Tftpboot Dir     {{tftpboot}}/latest-build-{{buildID}}   
+ TFTP             tftp://{{tftphost_ip}}{{tftpboot|replace("/tftpboot", "")}}/latest-build-{{buildID}}
+                  (tftp://{{tftphost}}{{tftpboot|replace("/tftpboot", "")}}/latest-build-{{buildID}})
+{% if archive_root  != "" %} Archive Dir      {{archive_root}}/latest-build-{{buildID}} 
+{% else                   %} Archive Dir      (not archived) {% endif %}
+ Recent Commits   RecentCommits.html 
+ Commits Since    {{commits_since}} 
+{% if jiras %}
+ Mentions Jiras   {{jiras}}
+{% else %}
+ Mentions Jiras   ( None )
+{% endif %}
+  
+ ----------------------------------------------------------------------------------------------------
+{% for plat in platforms | sort(reverse=true) recursive %} {% for type in platforms[plat] | sort recursive %}
+ {{plat}} {{type}}
+        
+ NAME        {{ platforms[plat][type]['installer'] }} 
+
+ Test Result {{ platforms[plat][type]['smoke_result'] }}
+
+ PATH        {{tftpboot}}/latest-build-{{buildID}}/{{platforms[plat][type]['installer']}} 
+ {# Do we need a URL with IP Address instead of hostname ?  #}
+ URL         {{webhost}}/{{tftpboot}}/latest-build-{{buildID}}/{{platforms[plat][type]['installer']}} 
+
+ Packages    {{tftpboot}}/latest-build-{{buildID}}/apt_list.{{type}} 
+ ----------------------------------------------------------------------------------------------------
+{% endfor %}
+{% endfor %}
