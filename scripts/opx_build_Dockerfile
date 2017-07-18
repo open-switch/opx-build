@@ -2,13 +2,23 @@ FROM debian:jessie
 MAINTAINER ops-dev@lists.openswitch.net
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    apt-utils
     dh-autoreconf \
     dh-systemd \
+    fakechroot \
     git-buildpackage \
     lsb-release \
+    python-apt \
+    python-jinja2 \
+    python-lxml \
+    python-pip \
+    python-requests \
     vim \
     wget \
  && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
+RUN pip install requests-file
 
 # Install gosu utility for use in entrypoint script
 #
