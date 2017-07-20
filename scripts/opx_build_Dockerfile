@@ -2,7 +2,7 @@ FROM debian:jessie
 MAINTAINER ops-dev@lists.openswitch.net
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    apt-utils
+    apt-utils \
     dh-autoreconf \
     dh-systemd \
     fakechroot \
