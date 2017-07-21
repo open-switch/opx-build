@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 #
 # Copyright (c) 2015 Dell Inc.
 #
@@ -15,6 +15,16 @@
 # permissions and limitations under the License.
 #
 
+CIDFILE=""
+cleanup () {
+  if [[ "${CIDFILE}b" != b ]] && [[ -e "${CIDFILE}" ]]; then
+    docker rm -f "$(cat ${CIDFILE})"
+    rm -f ${CIDFILE}
+  fi
+  docker rmi -f docker-opx:base
+}
+trap cleanup EXIT
+
 which docker 2>/dev/null >&2
 
 if [ ! $? = 0 ] ; then
@@ -22,9 +32,7 @@ if [ ! $? = 0 ] ; then
   exit 1
 fi
 
-ID=$(docker ps -f ancestor=docker-opx:latest --format "{{.ID}}")
-
-if [ "${ID}b" = b ] ; then
+if [ "$(docker ps -f ancestor=docker-opx:latest --format "{{.ID}}")b" = b ] ; then
   CIDFILE=id
 
   # As of this writing, commands requiring elevated privileges can't
@@ -48,12 +56,7 @@ if [ "${ID}b" = b ] ; then
 
   rm -f ${CIDFILE}
   docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
-  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' `cat ${CIDFILE}` docker-opx:latest
-  docker rm `cat ${CIDFILE}`
-
-  # cleanup
-  rm -f ${CIDFILE}
-  docker rmi docker-opx:base
+  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" docker-opx:latest
 fi
 
 echo "OPX Docker Image"
