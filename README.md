@@ -16,7 +16,7 @@ pushd opx-build/scripts
 popd
 
 # Build all repositories
-./opx-build/scripts/opx_run -ci "cd /mnt && opx-build/scripts/opx_build"
+./opx-build/scripts/opx_run /bin/bash -ci "cd /mnt && opx-build/scripts/opx_build"
 ```
 
 ## Get OpenSwitch Base
