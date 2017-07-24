@@ -1,5 +1,23 @@
 # opx-build
+
 This repository contains build information for OpenSwitch OPX Base.
+
+## Quick Start
+
+Requires [`docker`](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/), [`repo`](https://source.android.com/source/downloading), and `git`.
+
+```bash
+# Clone repositories
+repo init -u git://git.openswitch.net/opx/opx-manifest && repo sync
+
+# Build docker image
+pushd opx-build/scripts
+./opx_setup
+popd
+
+# Build all repositories
+./opx-build/scripts/opx_run -ci "cd /mnt && opx-build/scripts/opx_build"
+```
 
 ## Get OpenSwitch Base
 There are two ways to get the image:
