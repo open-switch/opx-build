@@ -102,8 +102,7 @@ fi
 
 # Create OPX Version file
 cat > /etc/OPX-release-version << EOF
-COPYRIGHT="{{ release.copyright }}"
-OS_NAME="Dell EMC Networking {{ release.name }}"
+OS_NAME="{{ release.name }}"
 OS_VERSION="{{ release.version }}"
 PLATFORM="$OPX_PLATFORM_DISPLAY_NAME"
 ARCHITECTURE="{{ release.architecture }}"
