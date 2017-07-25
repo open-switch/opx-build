@@ -80,4 +80,4 @@ Once all of the repositories have been built, you can install the created ONIE D
 
 See [Install OpenSwitch OPX Base on Dell S6000 Platform](https://github.com/open-switch/opx-docs/wiki/Install-OPX-Base-on-Dell-S6000-ON-platform) for complete information.
 
-(c) 2017 Dell
+(c) 2017 Dell EMC
