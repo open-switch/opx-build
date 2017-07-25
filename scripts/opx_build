@@ -50,6 +50,8 @@ repos=( opx-core
 	opx-sdi-sys-vm
 	opx-pas
 	opx-tmpctl
+        opx-tools
+        opx-alarm
 	)
 
 if [ ! -z "$1" ] && [ "$1" != "all" ]; then

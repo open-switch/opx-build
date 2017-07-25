@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Create the APT Pacakges (index) file for all local packages
+
+rm -fr dists
+mkdir -p dists/jessie/main/binary-amd64/
+apt-ftparchive packages . >dists/jessie/main/binary-amd64/Packages
