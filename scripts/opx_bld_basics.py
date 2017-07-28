@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#! /usr/bin/python
 """
 opx_bld_basics.py set of classes and defines intrinsic to the basic
                     OPX build environment
