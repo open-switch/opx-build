@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 opx_get_packages -- fetch a list of debian packages, and all their
     run-time dependencies

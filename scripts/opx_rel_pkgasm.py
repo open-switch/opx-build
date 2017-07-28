@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 """
 opx_rel_pkgasm.py -- assemble release object from packages
 
