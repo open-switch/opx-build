@@ -1,0 +1,80 @@
+.TH opx_rel_pkgasm.py 1 2017-08-01 OPX "OPX build commands"
+.SH NAME
+opx_rel_pkgasm.py \- Build an ONIE installer image for OPX
+.SH SYNOPSIS
+opx_rel_pkgasm.py -b
+.I blueprint
+-n
+.I build-number
+[ --debug ] [ -v
+.I verbosity-level
+]
+.SH DESCRIPTION
+This utility constructs a image file suitable for an ONIE installer, to install OPX on a target.
+.TP
+.I blueprint
+is the name of the blueprint file for the image (see Blueprints, below)
+.TP
+.I build-number
+is the build number, appended as the last set of digits in the image version (see Output, below)
+.IP --debug
+enables debug output, if present
+.TP
+.I verbosity-level
+is the desired level of verbosity of output, from 0 to 9
+.SS Blueprints
+A blueprint is an XML describing how to construct an ONIE image.  It specifies:
+.IP \(bu
+a tarfile to use as the root filesystem,
+.IP \(bu
+a list of packages to be included in the images, and
+.IP \(bu
+a list of hooks (shell scripts) to run on the target, as part of the installation process.
+.P
+The schema for a blueprint file can be found in the file
+
+.RS
+opx-onie-installer/release_bp/blueprint.xsd
+.RE
+
+Documentation regarding semantics is embedded in the schema.
+
+For an example of a blueprint to build an ONIE installer image for OPX for all Dell platforms, see the file
+
+.RS
+opx-onie-installer/release_bp/OPX_dell_base.xml
+.RE
+.SS Output
+This utility creates an ONIE image named as follows:
+
+.RI PKGS_ name - version -installer- arch .bin
+
+where:
+.TP
+.I name
+is specified by the 'name' element under the 'output_format' element in the blueprint
+.TP
+.I version
+is of the form x.y.z.b, where x, y, and z are specified in the blueprint (see the 'version' element, under the 'output_format' element, in the blueprint), and the build number b is given by the command-line option
+.TP
+.I arch
+is the target CPU architecture (only x86_64 is currently supported)
+.SH EXAMPLE
+To build an ONIE image for OPX for all Dell hardware platforms, and build number 1, run the command:
+
+  opx_build/scripts/opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml -n 1
+.SH FILES
+opx-onie-installer/release_bp/blueprint.xsd
+.RS
+Schema for blueprint files
+.RE
+
+opx-onie-installer/inst-hooks/*.sh
+.RS
+Installation hooks
+.RE
+
+.RI PKGS_ name - version -installer- arch .bin
+.RS
+Installer image file
+.RE
