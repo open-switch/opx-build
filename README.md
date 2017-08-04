@@ -39,7 +39,7 @@ The `repo` commands download all of the source files that are necessary to build
 ## Installation
 Once all of the repositories have been built, an ONIE installer image can be created.  For example, to create an image for Dell platforms, run the command:
 
-    opx-dev@077f7b30f8ef:/mnt# opx-build/scripts/opx_rel_pkgasm.py -b onie-opx-install/release_bp/OPX_dell_base.xml -n 1
+    opx-build/scripts/opx_rel_pkgasm.py -b onie-opx-installer/release_bp/OPX_dell_base.xml -n 1
 
 <hr />
 

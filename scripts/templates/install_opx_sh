@@ -123,7 +123,6 @@ rm -f /usr/sbin/policy-rc.d
 rm -f /etc/apt/sources.list.d/installer.list
 
 apt-get clean
-apt-get update
 
 # Protect the install log
 chmod 400 /root/install.log
