@@ -1,10 +1,8 @@
 # opx-build
 
-This repository contains build information for OpenSwitch OPX Base.
+This repository contains build information for OpenSwitch OPX Base. See [Install OpenSwitch OPX Base on Dell S6000 Platform](https://github.com/open-switch/opx-docs/wiki/Install-OPX-Base-on-Dell-S6000-ON-platform) to download binaries if desired.
 
-If you would like to download binaries instead, see [Install OpenSwitch OPX Base on Dell S6000 Platform](https://github.com/open-switch/opx-docs/wiki/Install-OPX-Base-on-Dell-S6000-ON-platform).
-
-## Getting Started with OpenSwitch
+## Getting started with OpenSwitch
 
 ### Prerequisites
 
@@ -12,7 +10,7 @@ If you would like to download binaries instead, see [Install OpenSwitch OPX Base
 - [Docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
 - [Repo](https://source.android.com/source/downloading)
 
-### Download Source Code and Create Docker Image
+### Download source code and create Docker image
 
 ```bash
 # Clone repositories
@@ -26,7 +24,7 @@ popd
 
 The `repo` commands download all of the source files that are necessary to build OpenSwitch. Beyond this, binary libraries for the SAI are also required. These binary libraries are currently *not* open source, as they are based on the SDK from Broadcom.
 
-### Build Packages
+### Build packages
 
 ```bash
 # Build all repositories
@@ -43,6 +41,6 @@ Once all of the repositories have been built, an ONIE installer image can be cre
 
 <hr />
 
-> For older documentation, see [b64c3be](https://github.com/open-switch/opx-build/blob/b64c3bedf6db0d5c5ed9fbe0e3ddcb5f4da3f525/README.md).
+See [b64c3be](https://github.com/open-switch/opx-build/blob/b64c3bedf6db0d5c5ed9fbe0e3ddcb5f4da3f525/README.md) for older documnentation.
 
-© 2017 Dell
+© 2017 Dell EMC
