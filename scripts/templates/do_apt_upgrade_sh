@@ -21,6 +21,9 @@ __EOF__
 chmod a+x /usr/sbin/policy-rc.d
 
 apt-get update
+apt-get install -y curl
+curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
+curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
 apt-get upgrade -y
 
 rm -f /usr/sbin/policy-rc.d
