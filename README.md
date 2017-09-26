@@ -4,7 +4,7 @@ This repository contains build information for OpenSwitch OPX Base.
 
 If you would like to download binaries instead, see [Install OPX Base on Dell ON Series platforms](https://github.com/open-switch/opx-docs/wiki/Install-OPX-Base-on-Dell-ON-Series-platforms).
 
-## Getting Started with OpenSwitch
+## Getting started with OpenSwitch
 
 ### Prerequisites
 
@@ -12,7 +12,7 @@ If you would like to download binaries instead, see [Install OPX Base on Dell ON
 - [Docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
 - [Repo](https://source.android.com/source/downloading)
 
-### Download Source Code and Create Docker Image
+### Download source code and create Docker image
 
 ```bash
 # Clone repositories
@@ -26,7 +26,7 @@ popd
 
 The `repo` commands download all of the source files that are necessary to build OpenSwitch. Beyond this, binary libraries for the SAI are also required. These binary libraries are currently *not* open source, as they are based on the SDK from Broadcom.
 
-### Build Packages
+### Build packages
 
 ```bash
 # Build all repositories
@@ -66,4 +66,4 @@ opx-build/scripts/opx_rel_pkgasm.py -b onie-opx-installer/release_bp/OPX_dell_ba
 
 > For older documentation, see [b64c3be](https://github.com/open-switch/opx-build/blob/b64c3bedf6db0d5c5ed9fbe0e3ddcb5f4da3f525/README.md).
 
-© 2017 Dell
+© 2017 Dell EMC
