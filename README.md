@@ -66,4 +66,4 @@ opx-build/scripts/opx_rel_pkgasm.py -b onie-opx-installer/release_bp/OPX_dell_ba
 
 > For older documentation, see [b64c3be](https://github.com/open-switch/opx-build/blob/b64c3bedf6db0d5c5ed9fbe0e3ddcb5f4da3f525/README.md).
 
-© 2017 Dell
+© 2017 Dell EMC
