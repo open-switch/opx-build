@@ -42,7 +42,7 @@ if [ "$(docker ps -f ancestor=docker-opx:latest --format "{{.ID}}")b" = b ] ; th
   #
   # Cf. https://github.com/docker/docker/issues/1916
 
-  docker build -t docker-opx:base -f opx_build_Dockerfile .
+  docker build -t docker-opx:base .
 
   # Create the pbuilder chroot.
   #
