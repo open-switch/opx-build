@@ -29,6 +29,7 @@ from lxml import etree
 from lxml.builder import E
 
 build_num = 99999
+build_suffix = ""
 verbosity = 0
 
 
@@ -685,9 +686,11 @@ class OpxRelBlueprint(object):
         mstr += "\tlocation = %s\n" % (self.rootfs['location'])
 
         # print in order of creation by make_output
-        name = "%s-%s.%s" % (self.output_format['name'],
-                             self.output_format['version'],
-                             str(build_num))
+        name = "%s-%s.%s%s" % (self.output_format['name'],
+                               self.output_format['version'],
+                               str(build_num),
+                               build_suffix
+                               )
 
         mstr += "creates:\n"
         if self.output_format['package_cache']:
@@ -759,6 +762,7 @@ class OpxRelPackageAssembler(object):
         version_info['name'] = self._blueprint.output_format['name']
         version_info['version'] = self._blueprint.output_format['version']
         version_info['build_num'] = build_num
+        version_info['build_suffix'] = build_suffix
         version_info['platform'] = self._blueprint.platform
         version_info['architecture'] = self._blueprint.architecture
         version_info['bp_description'] = self._blueprint.description
@@ -786,9 +790,12 @@ class OpxRelPackageAssembler(object):
         version_info.append('INTERNAL_BUILD_ID="%s %s"'
                             % (version_data['bp_description'],
                                 version_data['bp_version']))
-        version_info.append('BUILD_VERSION="%s(%d)"' % (
+        version_info.append('BUILD_VERSION="%s(%d)%s"' % (
                             version_data['version'],
-                            version_data['build_num']))
+                            version_data['build_num'],
+                            version_data['build_suffix'],
+                            )
+                           )
         version_info.append('BUILD_DATE="%s"' % (version_data['build_date']))
 
         return version_info
@@ -1067,11 +1074,13 @@ class OpxRelPackageAssembler(object):
 
         print("make_output(self)")
 
-        nm_prefix = "%s%s-%s.%s" % (
+        nm_prefix = "%s%s-%s.%s%s" % (
             "PKGS_" if self._blueprint.output_format['ONIE_pkg'] else "",
             self._blueprint.output_format['name'],
             self._blueprint.output_format['version'],
-            str(build_num))
+            str(build_num),
+            build_suffix
+            )
 
         nm_suffix = self._blueprint.installer_suffix
 
@@ -1253,6 +1262,8 @@ def main():
                         required=True)
     parser.add_argument('-n', help="specify build number of release",
                         type=int, default=9999)
+    parser.add_argument('-s', help="specify release number suffix",
+                        type=str, default="")
     parser.add_argument('-v', help="specify verbosity level",
                         type=int, default=0)
     parser.add_argument('--build-info',
@@ -1276,8 +1287,9 @@ def main():
     global verbosity
     verbosity = args.v
 
-    global build_num
+    global build_num, build_suffix
     build_num = args.n
+    build_suffix = args.s if args.s == "" else ("-" + args.s)
 
     with open(args.b, 'r') as fd_:
         rel_blueprint = OpxRelBlueprint.load_xml(fd_)
@@ -1308,6 +1320,7 @@ def main():
             "version": '1.0.1',
             "name": build_name,
             "number": build_number,
+            "suffix": build_suffix,
             "type": 'GENERIC',
             "started": art8601_format(start_timestamp),
             "durationMillis": int(duration.total_seconds() * 1000),

@@ -107,7 +107,7 @@ OS_VERSION="{{ release.version }}"
 PLATFORM="$OPX_PLATFORM_DISPLAY_NAME"
 ARCHITECTURE="{{ release.architecture }}"
 INTERNAL_BUILD_ID="{{ release.bp_description }} {{ release.bp_version }}"
-BUILD_VERSION="{{release.version}}({{release.build_num}})"
+BUILD_VERSION="{{release.version}}.{{release.build_num}}{{release.build_suffix}}"
 BUILD_DATE="{{ release.build_date }}"
 INSTALL_DATE="$(date -Isec)"
 EOF
