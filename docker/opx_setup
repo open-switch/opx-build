@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 #
 # Copyright (c) 2015 Dell Inc.
 #
@@ -15,13 +15,16 @@
 # permissions and limitations under the License.
 #
 
+# docker image name
+build="opxhub/build"
+
 CIDFILE=""
 cleanup () {
   if [[ "${CIDFILE}b" != b ]] && [[ -e "${CIDFILE}" ]]; then
     docker rm -f "$(cat ${CIDFILE})"
     rm -f ${CIDFILE}
   fi
-  docker rmi -f docker-opx:base
+  docker rmi -f ${build}:base
 }
 trap cleanup EXIT
 
@@ -32,7 +35,7 @@ if [ ! $? = 0 ] ; then
   exit 1
 fi
 
-if [ "$(docker ps -f ancestor=docker-opx:latest --format "{{.ID}}")b" = b ] ; then
+if [ "$(docker ps -f ancestor=${build}:latest --format "{{.ID}}")b" = b ] ; then
   CIDFILE=id
 
   # As of this writing, commands requiring elevated privileges can't
@@ -42,7 +45,7 @@ if [ "$(docker ps -f ancestor=docker-opx:latest --format "{{.ID}}")b" = b ] ; th
   #
   # Cf. https://github.com/docker/docker/issues/1916
 
-  docker build -t docker-opx:base .
+  docker build -t ${build}:base .
 
   # Create the pbuilder chroot.
   #
@@ -55,9 +58,9 @@ if [ "$(docker ps -f ancestor=docker-opx:latest --format "{{.ID}}")b" = b ] ; th
   # creation in one docker run invocation.
 
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie docker-opx:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
-  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" docker-opx:latest
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${build}:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
+  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" ${build}:latest
 fi
 
 echo "OPX Docker Image"
-docker ps -f ancestor=docker-opx:latest
+docker ps -f ancestor=${build}:latest

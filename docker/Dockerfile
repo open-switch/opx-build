@@ -28,6 +28,8 @@ COPY pbuilderrc /etc/pbuilderrc
 COPY D05update-deps /var/cache/pbuilder/hook.d/
 RUN touch /var/cache/pbuilder/result/Packages
 
+ENV PATH $PATH:/mnt/opx-build/scripts
+
 VOLUME /mnt
 WORKDIR /mnt
 

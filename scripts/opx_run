@@ -15,9 +15,27 @@
 # permissions and limitations under the License.
 #
 
-INTERACTIVE="-it"
-if [ $# -ge 1 ] && [ "$1" = "/bin/bash" ]; then
-    # Do not allocate pseudo-tty if running command directly
-    INTERACTIVE="-i"
+interactive="-i"
+if [ -t 1 ]; then
+    # STDOUT is attached to TTY
+    interactive="-it"
 fi
-docker run --rm --privileged "$INTERACTIVE" -e LOCAL_UID=$(id -u ${USER}) -e LOCAL_GID=$(id -g ${USER}) -v ${PWD}:/mnt docker-opx:latest "$@"
+
+read -d '' opx_docker_command <<- EOF
+docker run \
+    --rm \
+    --privileged \
+    -e LOCAL_UID=$(id -u ${USER}) \
+    -e LOCAL_GID=$(id -g ${USER}) \
+    -v ${PWD}:/mnt \
+    ${interactive} \
+    opxhub/build:latest
+EOF
+
+if [[ $# -gt 0 ]]; then
+    # run command directly
+    $opx_docker_command sh -c "$*"
+else
+    # launch interactive shell
+    $opx_docker_command
+fi
