@@ -26,7 +26,7 @@ RUN pip install requests-file
 COPY entrypoint.sh /
 COPY pbuilderrc /etc/pbuilderrc
 COPY hook.d /var/cache/pbuilder/hook.d
-RUN touch /var/cache/pbuilder/result/Packages
+RUN touch /mnt/Packages
 
 ENV PATH $PATH:/mnt/opx-build/scripts
 

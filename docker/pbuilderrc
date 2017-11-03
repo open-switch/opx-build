@@ -6,6 +6,6 @@
 # read pbuilderrc.5 document for notes on specific options.
 MIRRORSITE=http://httpredir.debian.org/debian
 HOOKDIR=/var/cache/pbuilder/hook.d
-OTHERMIRROR="deb [trusted=yes] file:///var/cache/pbuilder/result ./"
-BINDMOUNTS=/var/cache/pbuilder/result
+OTHERMIRROR="deb [trusted=yes] file:///mnt ./"
+BINDMOUNTS=/mnt
 EXTRAPACKAGES="apt-utils"

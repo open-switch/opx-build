@@ -9,16 +9,17 @@ set -e
 DIST=$(lsb_release --codename --short)
 
 # Define list of repositories in dependency order.
-repos=( opx-logging
-	opx-common-utils
-	opx-cps
-	opx-base-model
-	opx-platform-config
-	opx-sdi-api
-	opx-mlnx-sdi-sys
-	opx-pas
-	opx-tmpctl
-	)
+repos=(
+    opx-logging
+    opx-common-utils
+    opx-cps
+    opx-base-model
+    opx-platform-config
+    opx-sdi-api
+    opx-mlnx-sdi-sys
+    opx-pas
+    opx-tmpctl
+)
 
 if [ ! -z "$1" ] && [ "$1" != "all" ]; then
     repos=( "$@" )
@@ -28,10 +29,10 @@ fi
 export GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
 trap "rm -rf ${GIT_PBUILDER_OUTPUT_DIR}" EXIT
 
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs_1.mlnx.4.2.3102_amd64.deb  -P /var/cache/pbuilder/result
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs-dev_1.mlnx.4.2.3102_amd64.deb  -P /var/cache/pbuilder/result
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib_1.mlnx.4.2.3102_amd64.deb  -P /var/cache/pbuilder/result
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib-dev_1.mlnx.4.2.3102_amd64.deb  -P /var/cache/pbuilder/result
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs_1.mlnx.4.2.3102_amd64.deb  -P /mnt
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs-dev_1.mlnx.4.2.3102_amd64.deb  -P /mnt
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib_1.mlnx.4.2.3102_amd64.deb  -P /mnt
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib-dev_1.mlnx.4.2.3102_amd64.deb  -P /mnt
 
 apt-get install --assume-yes linux-headers-3.16.0-4-amd64
 rm -rf hw-mgmt
@@ -44,17 +45,17 @@ cd ..
 
 for r in ${repos[*]}; do
     if [ ! -d $r ]; then
-	    continue
+        continue
     fi
 
     (
-	cd $r
-	gbp buildpackage --git-dist=$DIST --git-pbuilder --git-ignore-branch --git-ignore-new
+        cd $r
+        gbp buildpackage --git-dist=$DIST --git-pbuilder --git-ignore-branch --git-ignore-new
 
-	sudo cp ${GIT_PBUILDER_OUTPUT_DIR}/*.deb /var/cache/pbuilder/result
-	cp ${GIT_PBUILDER_OUTPUT_DIR}/*.deb ..
+        cp ${GIT_PBUILDER_OUTPUT_DIR}/*.deb ..
+        (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
 
-	# clear output directory for next package
-	rm -rf ${GIT_PBUILDER_OUTPUT_DIR}/*
+        # clear output directory for next package
+        rm -rf ${GIT_PBUILDER_OUTPUT_DIR}/*
     )
 done
