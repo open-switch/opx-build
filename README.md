@@ -55,6 +55,24 @@ opx-dev@a51b0642125f:/mnt$ opx_build opx-logging
 opx-dev@a51b0642125f:/mnt$ opx_build opx-common-utils
 ```
 
+# Manual build of single repository
+
+Sometimes, it is helpful to build a single repository with finer control.
+
+It is always possible to enter the docker via opx_run, manually install prerequisite packages using "apt-get install" (for required Debian packages), "dpkg -i" (for required OPX packages), "pip install" (for required Python packages), etc., and run the command:
+
+```bash
+fakeroot debian/rules binary
+```
+
+This will allow you to see all files created during the build, such as object files, libtool files, C++ source and header files for Yang models, etc., that would normally be cleaned up after an opx_build build terminates.
+
+It is possible to build unstripped executables by adding the following line to the end of the file debian/rules:
+
+```
+override_dh_strip:
+```
+
 ## Installation
 Once all of the repositories have been built, an ONIE installer image can be created.  For example, to create an image for Dell platforms, run the command:
 
