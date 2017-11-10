@@ -10,14 +10,14 @@ If you would like to download binaries instead, see [Install OPX Base on Dell ON
 # get source code
 repo init -u git://git.openswitch.net/opx/opx-manifest && repo sync
 
-# build all packages
+# build all open-source packages
 opx-build/scripts/opx_run opx_build all
 
-# index local packages for installer (optional)
+# index local packages for installer
 opx-build/scripts/idx-pkgs
 
 # assemble installer
-opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml
+opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml --local-opx-pkgs
 ```
 
 ## Getting Started with OpenSwitch
@@ -74,13 +74,20 @@ override_dh_strip:
 ```
 
 ## Installation
-Once all of the repositories have been built, an ONIE installer image can be created.  For example, to create an image for Dell platforms, run the command:
+
+Once all of the repositories have been built, an ONIE installer image can be created.  For example, to create an image for Dell platforms from local packages, run these commands:
 
 ```bash
 # index local packages for installer (optional)
 opx-build/scripts/idx-pkgs
 
 # assemble installer
+opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml --local-opx-pkgs
+```
+
+If you would like to assemble an installer from downloaded packages, you can skip building all together. This will download packages from Bintray instead of using local packages.
+
+```bash
 opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml
 ```
 

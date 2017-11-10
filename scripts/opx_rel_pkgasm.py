@@ -898,6 +898,28 @@ class OpxRelPackageAssembler(object):
                                  'templates', 'do_apt_upgrade_sh')
         self._root_obj.do_chroot(script_nm)
 
+    def use_local_packages(self, local_opx_pkgs, local_dn_pkgs):
+        """
+        Change Bintray source to local source for opx, dn, or both.
+
+        Using local packages implies unstable distribution.
+
+        :param local_opx_pkgs:
+            Use local packages for open-source OPX packages
+        :param local_dn_pkgs:
+            Use local packages for non-free OPX packages
+        """
+        for pkgset in self._blueprint.package_sets:
+            for s in pkgset.package_sources:
+                if 'bintray.com/open-switch' in s.url:
+                    s.distribution = 'unstable'
+                    if local_opx_pkgs:
+                        s.url = 'copy:/mnt'
+                if 'dell-networking.bintray.com' in s.url:
+                    s.distribution = 'unstable'
+                    if local_dn_pkgs:
+                        s.url = 'copy:/mnt'
+
     def add_packages(self):
         """
         add_packages() add packages selected to the package cache
@@ -1272,6 +1294,11 @@ def main():
     parser.add_argument('--vcs-url')
     parser.add_argument('--vcs-revision')
 
+    parser.add_argument('--local-opx-pkgs', action='store_true',
+                        help='Use local open-source OPX packages')
+    parser.add_argument('--local-dn-pkgs', action='store_true',
+                        help='Use local closed-source OPX packages')
+
     args = parser.parse_args()
 
     if args.debug:
@@ -1300,6 +1327,8 @@ def main():
     rel_plan = OpxRelPackageAssembler(rel_blueprint)
     rel_plan.update_rootfs()
     rel_plan.filter_packages()
+    if args.local_opx_pkgs or args.local_dn_pkgs:
+        rel_plan.use_local_packages(args.local_opx_pkgs, args.local_dn_pkgs)
     rel_plan.add_packages()
     rel_plan.verify_packages()
     rel_plan.install_packages()

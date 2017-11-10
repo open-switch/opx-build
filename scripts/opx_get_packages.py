@@ -491,7 +491,7 @@ class OpxPackages(object):
             self._cache.fetch_archives()
         except apt.cache.FetchFailedException as ex:
             # re-raise exception
-            msg = "Fetch failed"
+            msg = "Fetch failed\n{}".format(ex)
             raise OpxPackagesError, OpxPackagesError(msg), sys.exc_info()[2]
         except apt.cache.FetchCancelledException as ex:
             # re-raise exception

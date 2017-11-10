@@ -1,7 +1,17 @@
 #!/bin/bash
 
-# Create the APT Pacakges (index) file for all local packages
+# Create the APT Packages (index) file for all local packages
+
+DIST="unstable"
+COMP="main"
+ARCH="amd64"
+
+[[ $# -gt 0 ]] && {
+  DIST="$1"
+}
+
+LOC="dists/$DIST/$COMP/binary-$ARCH"
 
 rm -fr dists
-mkdir -p dists/jessie/main/binary-amd64/
-apt-ftparchive packages . >dists/jessie/main/binary-amd64/Packages
+mkdir -p "$LOC/"
+apt-ftparchive packages . > "$LOC/Packages"
