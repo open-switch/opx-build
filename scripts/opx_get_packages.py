@@ -22,12 +22,12 @@ logger.addHandler(logging.NullHandler())
 
 # defaults for the OpxPackages constructor (__init__) function
 #  also used in command invocation method below
-DEFAULT_SYSROOT = "workspace/debian/jessie/x86_64/sysroot"
+DEFAULT_SYSROOT = None
 DEFAULT_SYSROOTDEV = None
 
-DEFAULT_PKG_URL = "http://artifactory.force10networks.com/ar"
-DEFAULT_PKG_DISTRIBUTION = "unstable"
-DEFAULT_PKG_COMPONENT = "non-free"
+DEFAULT_PKG_URL = "http://dl.bintray.com/open-switch/opx-apt"
+DEFAULT_PKG_DISTRIBUTION = "jessie"
+DEFAULT_PKG_COMPONENT = "main"
 
 
 class VersionWrapper(object):
