@@ -58,7 +58,7 @@ if [ "$(docker ps -f ancestor=${build}:latest --format "{{.ID}}")b" = b ] ; then
   # creation in one docker run invocation.
 
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${build}:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${build}:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y git python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
   docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" ${build}:latest
 fi
 

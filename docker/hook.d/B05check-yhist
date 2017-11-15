@@ -1,0 +1,32 @@
+#!/bin/bash -e
+# Fail build if any yhist files change
+
+# Fix unknown TERM error with tput
+TERM=dumb
+
+builddir="$(readlink -f /tmp/buildd/*/debian/..)/"
+srcdir="/mnt/$(basename $builddir | awk -F'-' 'BEGIN {OFS="-"} {NF--; print}')/"
+
+# Only run on repos with yhist files
+if test -n "$(find $builddir -name '*.yhist' -type f)"; then
+
+  # Copy new yhist files to src repo
+  find $builddir -name '*.yhist' -type f -print0 | xargs -0 cp -t $srcdir/history/
+
+  # Fail build if any yhist files changed
+  git_diff="$(git -C $srcdir status --porcelain '*.yhist')"
+  if test -n "$git_diff"; then
+    Error () { echo "$(tput setaf 1)$*$(tput sgr 0)"; }
+    Error "================================================="
+    Error "[ERROR] Yhist changes detected. Build marked as failed."
+    Error ""
+    Error "If you meant to change these, please commit the changes and rebuild."
+    Error ""
+    Error "Changes:"
+    Error "$git_diff"
+    Error "================================================="
+    exit 1
+  fi
+
+fi
+
