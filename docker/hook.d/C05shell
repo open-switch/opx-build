@@ -1,0 +1,16 @@
+#!/bin/bash -e
+# Drop into a shell on build failure
+
+Error () { echo "$(tput setaf 1)[ERROR] $*$(tput sgr 0)"; }
+
+Error "Build failed. Preparing shell for diagnosis."
+
+apt-get install -y --force-yes vim less bash >/dev/null 2>&1
+
+builddir="$(readlink -f /tmp/buildd/*/debian/..)/"
+cd "$builddir"
+
+Error "Build failed. Entering shell for diagnosis."
+
+/bin/bash < /dev/tty > /dev/tty 2> /dev/tty
+
