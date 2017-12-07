@@ -4,7 +4,7 @@ This repository contains build information for OpenSwitch OPX Base.
 
 If you would like to download binaries instead, see [Install OPX Base on Dell ON Series platforms](https://github.com/open-switch/opx-docs/wiki/Install-OPX-Base-on-Dell-ON-Series-platforms).
 
-## Quick Start
+## Quick start
 
 ```bash
 # get source code
@@ -20,7 +20,7 @@ opx-build/scripts/idx-pkgs
 opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml --local-opx-pkgs
 ```
 
-## Getting Started with OpenSwitch
+## Getting started with OpenSwitch
 
 ### Prerequisites
 
@@ -28,7 +28,7 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX
 - [Docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
 - [Repo](https://source.android.com/source/downloading)
 
-### Get Source Code
+### Get source code
 
 ```bash
 repo init -u git://git.openswitch.net/opx/opx-manifest && repo sync
@@ -36,7 +36,7 @@ repo init -u git://git.openswitch.net/opx/opx-manifest && repo sync
 
 The `repo` commands download all of the source files that are necessary to build OpenSwitch. Beyond this, binary libraries for the SAI are also required. These binary libraries are currently *not* open source, as they are based on the Broadcom SDK.
 
-### Build Packages
+### Build packages
 
 ```bash
 # Build all repositories
@@ -55,7 +55,7 @@ opx-dev@a51b0642125f:/mnt$ opx_build opx-logging
 opx-dev@a51b0642125f:/mnt$ opx_build opx-common-utils
 ```
 
-# Manual build of single repository
+## Manual build of single repository
 
 Sometimes, it is helpful to build a single repository with finer control.
 
@@ -91,7 +91,7 @@ If you would like to assemble an installer from downloaded packages, you can ski
 opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml
 ```
 
-## Creating the opx-build Docker Image
+## Creating the opx-build Docker image
 
 ```bash
 cd opx-build/docker
@@ -100,4 +100,4 @@ cd opx-build/docker
 
 > [For older documentation, see b64c3be](https://github.com/open-switch/opx-build/blob/b64c3bedf6db0d5c5ed9fbe0e3ddcb5f4da3f525/README.md).
 
-© 2017 Dell
+© 2017 Dell EMC
