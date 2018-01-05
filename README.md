@@ -44,15 +44,9 @@ opx-build/scripts/opx_run opx_build all
 
 # Build a single repository (e.g., opx-logging)
 opx-build/scripts/opx_run opx_build opx-logging
-```
 
-Building multiple packages with the Docker image created from `opx_setup` requires building each package in dependency order. An error with the missing packages will be thrown if packages are built out of dependency order. Building all packages is often quicker and easier.
-
-```bash
-# Build multiple repositories (e.g., opx-logging and opx-common-utils)
-opx-build/scripts/opx_run
-opx-dev@a51b0642125f:/mnt$ opx_build opx-logging
-opx-dev@a51b0642125f:/mnt$ opx_build opx-common-utils
+# Build multiple repositories
+opx-build/scripts/opx_run opx_build opx-logging opx-nas-common
 ```
 
 ## Manual build of single repository
