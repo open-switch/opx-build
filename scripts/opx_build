@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # Copyright (c) 2017 Dell Inc.
 #
@@ -15,12 +15,9 @@
 # permissions and limitations under the License.
 #
 
-set -e
-
 DIST=$(lsb_release --codename --short)
 
 # Define list of repositories in dependency order.
-# 
 # TODO: read the debian/control files and compute the dependency graph.
 repos=(
     opx-core
@@ -60,35 +57,39 @@ if [ ! -z "$1" ] && [ "$1" != "all" ]; then
 fi
 
 # Use temporary output directory isolate the output of each build
-export GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
-trap "rm -rf ${GIT_PBUILDER_OUTPUT_DIR}" EXIT
+GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
+export GIT_PBUILDER_OUTPUT_DIR
+trap 'rm -rf ${GIT_PBUILDER_OUTPUT_DIR}' EXIT
 
 # For installing local packages as dependencies
 touch Packages
 
 for r in ${repos[*]}; do
-    if [ ! -d $r ]; then
+    if [ ! -d "$r" ]; then
         continue
     fi
 
-    if [ ${r%/} == "opx-core" ]; then
+    if [ "${r%/}" == "opx-core" ]; then
         (
-            cd $r
+            cd "$r"
             equivs-build control
-            mv *.deb ..
-            (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
+            mv ./*.deb ..
         )
-        continue
+    else
+        (
+            cd "$r"
+            gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
+
+            cp "${GIT_PBUILDER_OUTPUT_DIR}"/*.deb ..
+
+            # clear output directory for next package
+            # question mark ensures that rm -rf /* is never run
+            rm -rf "${GIT_PBUILDER_OUTPUT_DIR:?}"/*
+        )
     fi
 
-    (
-        cd $r
-        gbp buildpackage --git-dist=$DIST --git-pbuilder --git-ignore-branch --git-ignore-new
-
-        cp ${GIT_PBUILDER_OUTPUT_DIR}/*.deb ..
-        (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
-
-        # clear output directory for next package
-        rm -rf ${GIT_PBUILDER_OUTPUT_DIR}/*
-    )
+    # create local package cache
+    (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
 done
+
+# vim: set sw=4 et

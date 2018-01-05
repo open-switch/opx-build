@@ -26,36 +26,45 @@ if [ ! -z "$1" ] && [ "$1" != "all" ]; then
 fi
 
 # Use temporary output directory isolate the output of each build
-export GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
-trap "rm -rf ${GIT_PBUILDER_OUTPUT_DIR}" EXIT
+GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
+export GIT_PBUILDER_OUTPUT_DIR
+trap 'rm -rf ${GIT_PBUILDER_OUTPUT_DIR}' EXIT
 
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs_1.mlnx.4.2.3102_amd64.deb  -P /mnt
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs-dev_1.mlnx.4.2.3102_amd64.deb  -P /mnt
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib_1.mlnx.4.2.3102_amd64.deb  -P /mnt
-wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib-dev_1.mlnx.4.2.3102_amd64.deb  -P /mnt
+# For installing local packages as dependencies
+touch Packages
+
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs_1.mlnx.4.2.3102_amd64.deb -P /mnt/
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sxd-libs-dev_1.mlnx.4.2.3102_amd64.deb -P /mnt/
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib_1.mlnx.4.2.3102_amd64.deb -P /mnt/
+wget https://github.com/Mellanox/SAI-Implementation/raw/sonic/sdk/sx-complib-dev_1.mlnx.4.2.3102_amd64.deb -P /mnt/
 
 apt-get install --assume-yes linux-headers-3.16.0-4-amd64
 rm -rf hw-mgmt
 git clone https://github.com/Mellanox/hw-mgmt -b V1.0.0050
-cd hw-mgmt
-sed "s~@SED_VERSION@~V1.0.0050~" -i debian/changelog
-chmod +x debian/rules
-debian/rules binary KVERSION="3.16.0-4-amd64"
-cd ..
+(
+    cd hw-mgmt
+    sed "s~@SED_VERSION@~V1.0.0050~" -i debian/changelog
+    chmod +x debian/rules
+    debian/rules binary KVERSION="3.16.0-4-amd64"
+    mv ./*.deb ..
+)
 
 for r in ${repos[*]}; do
-    if [ ! -d $r ]; then
+    if [ ! -d "$r" ]; then
         continue
     fi
 
     (
-        cd $r
-        gbp buildpackage --git-dist=$DIST --git-pbuilder --git-ignore-branch --git-ignore-new
+        cd "$r"
+        gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
 
-        cp ${GIT_PBUILDER_OUTPUT_DIR}/*.deb ..
+        cp "${GIT_PBUILDER_OUTPUT_DIR}"/*.deb ..
         (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
 
         # clear output directory for next package
-        rm -rf ${GIT_PBUILDER_OUTPUT_DIR}/*
+        # question mark ensures that rm -rf /* is never run
+        rm -rf "${GIT_PBUILDER_OUTPUT_DIR:?}"/*
     )
 done
+
+# vim: set sw=4 et
