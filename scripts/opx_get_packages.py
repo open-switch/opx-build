@@ -26,7 +26,7 @@ DEFAULT_SYSROOT = None
 DEFAULT_SYSROOTDEV = None
 
 DEFAULT_PKG_URL = "http://dl.bintray.com/open-switch/opx-apt"
-DEFAULT_PKG_DISTRIBUTION = "jessie"
+DEFAULT_PKG_DISTRIBUTION = "unstable"
 DEFAULT_PKG_COMPONENT = "main"
 
 
@@ -106,8 +106,6 @@ class OpxPackageSource(object):
 
 class OpxPackages(object):
     """
-    OpxPackages class -- Amazon River Packages class
-
     Provides interface to the python apt and apt_pkg libraries
     Used to fulfill build and dev dependencies for clone and
     clone-all actions.
@@ -193,12 +191,25 @@ class OpxPackages(object):
         # create sources.list file with url, distribution, and component.
         with open(self.sources, "w") as f:
             for pkg_source in self._pkg_sources:
-                print("Using %s %s %s" % (pkg_source.url,
-                                          pkg_source.distribution,
-                                          pkg_source.component))
-                f.write("deb [arch=amd64] %s %s %s\n" % (pkg_source.url,
-                                            pkg_source.distribution,
-                                            pkg_source.component))
+                source = "{} {} {}".format(
+                    pkg_source.url,
+                    pkg_source.distribution,
+                    pkg_source.component,
+                )
+
+                # local packages must be explicitly trusted
+                if "copy:/mnt" in pkg_source.url:
+                    options = "[arch=amd64 trusted=yes]"
+                else:
+                    options = "[arch=amd64]"
+
+                print("Using {}".format(source))
+
+                f.write("deb %s %s\n" % (options, source))
+
+        # create apt preferences file to always use local packages
+        with open(os.path.join(self._folder, "etc", "apt", "preferences"), "w") as f:
+            f.write('Package: *\nPin: origin ""\nPin-Priority: 1001\n')
 
         # create cache and update it
         self._cache = apt.Cache(rootdir=self._folder, memonly=True)

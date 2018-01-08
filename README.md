@@ -13,11 +13,8 @@ repo init -u git://git.openswitch.net/opx/opx-manifest && repo sync
 # build all open-source packages
 opx-build/scripts/opx_run opx_build all
 
-# index local packages for installer
-opx-build/scripts/idx-pkgs
-
 # assemble installer
-opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml --local-opx-pkgs
+opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml --dist unstable
 ```
 
 ## Getting started with OpenSwitch
@@ -69,20 +66,16 @@ override_dh_strip:
 
 ## Installation
 
-Once all of the repositories have been built, an ONIE installer image can be created.  For example, to create an image for Dell platforms from local packages, run these commands:
+Creating an installer requires the [opx-onie-installer](http://git.openswitch.net/cgit/opx/opx-onie-installer/) repository. This repository is included if you cloned with `repo` and contains the blueprints used to assemble an installer.
+
+Any local packages you have built will be included in the installer. To exclude them, remove the `deb` files from the repo root.
+
+By default, the `unstable` distribution is used to grab missing packages on installer creation and fetch updates when running. To use a different distribution, use the `--dist` flag.
+
+Run `opx-build/scripts/opx_run opx_rel_pkgasm.py --help` to see the available distributions.
 
 ```bash
-# index local packages for installer (optional)
-opx-build/scripts/idx-pkgs
-
-# assemble installer
-opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml --local-opx-pkgs
-```
-
-If you would like to assemble an installer from downloaded packages, you can skip building all together. This will download packages from Bintray instead of using local packages.
-
-```bash
-opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml
+opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX_dell_base.xml --dist stable
 ```
 
 ## Creating the opx-build Docker image

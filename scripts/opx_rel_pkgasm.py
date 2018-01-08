@@ -6,31 +6,52 @@ opx_rel_pkgasm.py -- assemble release object from packages
 """
 
 from __future__ import print_function
+
+import argparse
+import collections
+import datetime
+import errno
+import fileinput
+import glob
+import hashlib
+import jinja2
+import json
+import logging
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import time
+
+from lxml import etree
+from lxml.builder import E
+
 import opx_bld_basics
 import opx_get_packages
 import opx_rootfs
-import datetime
-import hashlib
-import json
-import re
-import sys
-import glob
-import os
-import stat
-import subprocess
-import time
-import argparse
-import collections
-import logging
-import jinja2
-import shutil
-import errno
-from lxml import etree
-from lxml.builder import E
 
 build_num = 99999
 build_suffix = ""
 verbosity = 0
+
+RELEASE_MAPPING = {
+    'oldstable': '2.0',
+    'stable': '2.1',
+    'testing': '2.2',
+    'unstable': '2.2-dev',
+}
+
+DISTRIBUTIONS = [
+    'oldstable',
+    'stable',
+    'testing',
+    'unstable',
+    '2.0',
+    '2.1',
+    '2.2',
+]
 
 
 def _str2bool(s):
@@ -551,7 +572,7 @@ class OpxRelBlueprint(object):
             sys.exit(1)
 
     @classmethod
-    def fromElement(cls, elem):
+    def fromElement(cls, elem, dist):
         """
         Construct :class:`OpxRelBlueprint` object from :class:`etree.Element`
         """
@@ -594,9 +615,19 @@ class OpxRelBlueprint(object):
             'package_cache': _str2bool(output_elem.find('package_cache').text),
         }
 
+        if dist in RELEASE_MAPPING:
+            output_format['version'] = RELEASE_MAPPING[dist]
+        else:
+            output_format['version'] = dist
+
         package_sets = []
         for package_set_elem in elem.findall('package_set'):
             package_sets.append(OpxRelPackageSet.fromElement(package_set_elem))
+
+        for p in package_sets:
+            for s in p.package_sources:
+                if 'copy:/mnt' in s.url or 'opx-apt' in s.url:
+                    s.distribution = dist
 
         inst_hooks = []
         for hook_elem in elem.findall('inst_hook'):
@@ -641,11 +672,11 @@ class OpxRelBlueprint(object):
         return elem
 
     @classmethod
-    def load_xml(cls, fd_):
+    def load_xml(cls, fd_, dist):
         tree = etree.parse(fd_)
         tree.xinclude()
         root = tree.getroot()
-        return OpxRelBlueprint.fromElement(root)
+        return OpxRelBlueprint.fromElement(root, dist)
 
     def dumps_xml(self):
         root = etree.Element('blueprint',
@@ -898,27 +929,6 @@ class OpxRelPackageAssembler(object):
                                  'templates', 'do_apt_upgrade_sh')
         self._root_obj.do_chroot(script_nm)
 
-    def use_local_packages(self, local_opx_pkgs, local_dn_pkgs):
-        """
-        Change Bintray source to local source for opx, dn, or both.
-
-        Using local packages implies unstable distribution.
-
-        :param local_opx_pkgs:
-            Use local packages for open-source OPX packages
-        :param local_dn_pkgs:
-            Use local packages for non-free OPX packages
-        """
-        for pkgset in self._blueprint.package_sets:
-            for s in pkgset.package_sources:
-                if 'bintray.com/open-switch' in s.url:
-                    s.distribution = 'unstable'
-                    if local_opx_pkgs:
-                        s.url = 'copy:/mnt'
-                if 'dell-networking.bintray.com' in s.url:
-                    s.distribution = 'unstable'
-                    if local_dn_pkgs:
-                        s.url = 'copy:/mnt'
 
     def add_packages(self):
         """
@@ -1064,7 +1074,7 @@ class OpxRelPackageAssembler(object):
 
         self.dependencies.append(dependency)
 
-    def copy_inst_hooks(self):
+    def copy_inst_hooks(self, dist):
         """
         copy_inst_hooks() -- copy the postinst hooks from
             the blueprint folder to the rootfs
@@ -1084,6 +1094,16 @@ class OpxRelPackageAssembler(object):
 
         for hook in self._blueprint.inst_hooks:
             shutil.copy(hook.hook_file_path, destpath)
+
+            # Change distribution in apt inst-hook
+            if hook.hook_file == '98-set-apt-sources.postinst.sh':
+                new_hook = "{}/{}".format(destpath, hook.hook_file)
+                subprocess.check_call([
+                    "sed",
+                    "-i",
+                    "s/opx-apt unstable/opx-apt {}/g".format(dist),
+                    new_hook,
+                ])
 
 
     def make_output(self):
@@ -1269,6 +1289,17 @@ class OpxRelPackageAssembler(object):
             pass
 
 
+def index_local_packages(dist):
+    """Run the idx-pkgs script from opx-build/scripts with the correct dist."""
+    cmd = 'opx-build/scripts/idx-pkgs'
+    try:
+        subprocess.check_call([cmd, dist])
+    except subprocess.CalledProcessError as ex:
+        print("ERROR: indexing local packages failed: %s" % (ex))
+        raise
+
+
+
 def main():
     """
     command line method to assemble a release from packages
@@ -1293,11 +1324,13 @@ def main():
     parser.add_argument('--build-url')
     parser.add_argument('--vcs-url')
     parser.add_argument('--vcs-revision')
+    parser.add_argument(
+        '-d', '--dist',
+        help="Distribution to build",
+        choices=DISTRIBUTIONS,
+        default='unstable'
+    )
 
-    parser.add_argument('--local-opx-pkgs', action='store_true',
-                        help='Use local open-source OPX packages')
-    parser.add_argument('--local-dn-pkgs', action='store_true',
-                        help='Use local closed-source OPX packages')
 
     args = parser.parse_args()
 
@@ -1319,7 +1352,7 @@ def main():
     build_suffix = args.s if args.s == "" else ("-" + args.s)
 
     with open(args.b, 'r') as fd_:
-        rel_blueprint = OpxRelBlueprint.load_xml(fd_)
+        rel_blueprint = OpxRelBlueprint.load_xml(fd_, args.dist)
 
     if verbosity > 0:
         print(rel_blueprint)
@@ -1327,12 +1360,11 @@ def main():
     rel_plan = OpxRelPackageAssembler(rel_blueprint)
     rel_plan.update_rootfs()
     rel_plan.filter_packages()
-    if args.local_opx_pkgs or args.local_dn_pkgs:
-        rel_plan.use_local_packages(args.local_opx_pkgs, args.local_dn_pkgs)
+    index_local_packages(args.dist)
     rel_plan.add_packages()
     rel_plan.verify_packages()
     rel_plan.install_packages()
-    rel_plan.copy_inst_hooks()
+    rel_plan.copy_inst_hooks(args.dist)
     rel_plan.make_output()
 
     end_timestamp = datetime.datetime.now()
