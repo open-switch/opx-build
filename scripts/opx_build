@@ -27,8 +27,6 @@ repos=(
     opx-base-model
     opx-db-sql
     opx-sai-api
-    opx-sai-common-utils
-    opx-sai-common
     opx-sai-vm
     opx-nas-common
     opx-nas-linux
@@ -41,11 +39,7 @@ repos=(
     opx-nas-qos
     opx-nas-daemon
     opx-platform-config
-    opx-sdi-api
-    opx-sdi-framework
-    opx-sdi-device-drivers
     opx-sdi-sys
-    opx-sdi-sys-vm
     opx-pas
     opx-tmpctl
     opx-tools
