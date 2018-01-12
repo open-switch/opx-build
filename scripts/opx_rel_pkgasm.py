@@ -40,7 +40,6 @@ RELEASE_MAPPING = {
     'oldstable': '2.0',
     'stable': '2.1',
     'testing': '2.2',
-    'unstable': '2.2-dev',
 }
 
 DISTRIBUTIONS = [
