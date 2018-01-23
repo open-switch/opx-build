@@ -1,8 +1,0 @@
-#!/bin/bash -e
-# Always install local packages if available
-
-cat > "/etc/apt/preferences" << EOF
-Package: *
-Pin: origin ""
-Pin-Priority: 1001
-EOF

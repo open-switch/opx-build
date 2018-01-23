@@ -55,13 +55,13 @@ GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
 export GIT_PBUILDER_OUTPUT_DIR
 trap 'rm -rf ${GIT_PBUILDER_OUTPUT_DIR}' EXIT
 
-# For installing local packages as dependencies
-touch Packages
-
 for r in ${repos[*]}; do
     if [ ! -d "$r" ]; then
         continue
     fi
+
+    # create local package cache
+    (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
 
     if [ "${r%/}" == "opx-core" ]; then
         (
@@ -81,9 +81,6 @@ for r in ${repos[*]}; do
             rm -rf "${GIT_PBUILDER_OUTPUT_DIR:?}"/*
         )
     fi
-
-    # create local package cache
-    (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
 done
 
 # vim: set sw=4 et

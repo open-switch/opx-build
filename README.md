@@ -35,6 +35,8 @@ The `repo` commands download all of the source files that are necessary to build
 
 ### Build packages
 
+By default, build dependencies are pulled from the `unstable` distribution. To change this, use `$OPX_DIST`.
+
 ```bash
 # Build all repositories
 opx-build/scripts/opx_run opx_build all
@@ -44,6 +46,9 @@ opx-build/scripts/opx_run opx_build opx-logging
 
 # Build multiple repositories
 opx-build/scripts/opx_run opx_build opx-logging opx-nas-common
+
+# Build against the testing distribution
+OPX_DIST=testing opx-build/scripts/opx_run opx_build all
 ```
 
 ## Manual build of single repository
@@ -80,9 +85,11 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX
 
 ## Creating the opx-build Docker image
 
+By default, build dependencies are pulled from the `unstable` distribution. To change this, use `$OPX_DIST`.
+
 ```bash
 cd opx-build/docker
-./opx_setup
+OPX_DIST=testing ./opx_setup
 ```
 
 > [For older documentation, see b64c3be](https://github.com/open-switch/opx-build/blob/b64c3bedf6db0d5c5ed9fbe0e3ddcb5f4da3f525/README.md).

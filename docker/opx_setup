@@ -18,6 +18,9 @@
 # docker image name
 build="opxhub/build"
 
+# debian distribution for opx packages
+opx_dist="${OPX_DIST-unstable}"
+
 CIDFILE=""
 cleanup () {
   if [[ "${CIDFILE}b" != b ]] && [[ -e "${CIDFILE}" ]]; then
@@ -58,8 +61,27 @@ if [ "$(docker ps -f ancestor=${build}:latest --format "{{.ID}}")b" = b ] ; then
   # creation in one docker run invocation.
 
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${build}:base sh -c 'git-pbuilder create; git-pbuilder update; echo "apt-get install -y git python-pip; pip install pyang; ln -s /usr/local/bin/pyang /usr/bin" | git-pbuilder login --save-after-login'
-  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" ${build}:latest
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${build}:base sh -c '
+git-pbuilder create
+git-pbuilder update
+echo "
+  apt-get install -y curl eatmydata git python-pip
+  pip install pyang
+  ln -s /usr/local/bin/pyang /usr/bin
+  curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
+  curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
+  echo "deb http://dell-networking.bintray.com/opx-apt '"$opx_dist"' main" | tee -a /etc/apt/sources.list
+  echo "deb http://dl.bintray.com/open-switch/opx-apt '"$opx_dist"' main" | tee -a /etc/apt/sources.list
+  cat >/etc/apt/preferences <<EOF
+Package: *
+Pin: origin ""
+Pin-Priority: 1001
+EOF
+" | git-pbuilder login --save-after-login'
+  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${build}:$opx_dist"
+  if [ "$opx_dist"b = "unstable"b ]; then
+    docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${build}:latest"
+  fi
 fi
 
 echo "OPX Docker Image"

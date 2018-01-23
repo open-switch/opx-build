@@ -7,5 +7,5 @@
 MIRRORSITE=http://httpredir.debian.org/debian
 HOOKDIR=/var/cache/pbuilder/hook.d
 OTHERMIRROR="deb [trusted=yes] file:///mnt ./"
-BINDMOUNTS=/mnt
+BINDMOUNTS="/mnt"
 EXTRAPACKAGES="apt-utils"

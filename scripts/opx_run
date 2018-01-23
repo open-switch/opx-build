@@ -15,6 +15,8 @@
 # permissions and limitations under the License.
 #
 
+image_tag="${OPX_DIST-latest}"
+
 interactive="-i"
 if [ -t 1 ]; then
     # STDOUT is attached to TTY
@@ -29,7 +31,7 @@ docker run \
     -e LOCAL_GID=$(id -g ${USER}) \
     -v ${PWD}:/mnt \
     ${interactive} \
-    opxhub/build:latest
+    opxhub/build:$image_tag
 EOF
 
 if [[ $# -gt 0 ]]; then
