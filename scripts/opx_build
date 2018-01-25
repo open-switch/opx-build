@@ -15,6 +15,10 @@
 # permissions and limitations under the License.
 #
 
+# Available Options
+OPX_GIT_TAG=${OPX_GIT_TAG-no}
+OPX_POOL_PACKAGES=${OPX_POOL_PACKAGES-no}
+
 DIST=$(lsb_release --codename --short)
 
 # Define list of repositories in dependency order.
@@ -46,7 +50,7 @@ repos=(
     opx-alarm
 )
 
-if [ ! -z "$1" ] && [ "$1" != "all" ]; then
+if [ $# -gt 0 ] && [ "$1" != "all" ]; then
     repos=( "$@" )
 fi
 
@@ -57,22 +61,28 @@ trap 'rm -rf ${GIT_PBUILDER_OUTPUT_DIR}' EXIT
 
 for r in ${repos[*]}; do
     if [ ! -d "$r" ]; then
-        continue
+      echo "$r does not exist..."
+      continue
     fi
 
-    # create local package cache
-    (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
-
-    if [ "${r%/}" == "opx-core" ]; then
+    if [ -e "$r/control" ]; then
         (
             cd "$r"
             equivs-build control
             mv ./*.deb ..
         )
-    else
+    elif [ -e "$r/debian/control" ]; then
         (
+            # create local package cache
+            (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
+
             cd "$r"
-            gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
+
+            if [ "$OPX_GIT_TAG"b = "yes"b ]; then
+              gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new --git-tag
+            else
+              gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
+            fi
 
             cp "${GIT_PBUILDER_OUTPUT_DIR}"/*.deb ..
 
@@ -80,6 +90,13 @@ for r in ${repos[*]}; do
             # question mark ensures that rm -rf /* is never run
             rm -rf "${GIT_PBUILDER_OUTPUT_DIR:?}"/*
         )
+    else
+        echo "No control file found in $r. Continuing..."
+    fi
+
+    if [ "$OPX_POOL_PACKAGES"b = "yes"b ]; then
+      mkdir -p "./pkg/$r"
+      find . -maxdepth 1 \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) -exec mv -t "./pkg/$r/" {} +
     fi
 done
 

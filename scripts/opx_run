@@ -15,7 +15,10 @@
 # permissions and limitations under the License.
 #
 
-image_tag="${OPX_DIST-latest}"
+# Available Options
+OPX_DIST="${OPX_DIST-latest}"
+OPX_GIT_TAG=${OPX_GIT_TAG-no}
+OPX_POOL_PACKAGES=${OPX_POOL_PACKAGES-no}
 
 interactive="-i"
 if [ -t 1 ]; then
@@ -24,14 +27,18 @@ if [ -t 1 ]; then
 fi
 
 read -d '' opx_docker_command <<- EOF
-docker run \
-    --rm \
-    --privileged \
-    -e LOCAL_UID=$(id -u ${USER}) \
-    -e LOCAL_GID=$(id -g ${USER}) \
-    -v ${PWD}:/mnt \
-    ${interactive} \
-    opxhub/build:$image_tag
+docker run
+    --rm
+    --privileged
+    -e LOCAL_UID=$(id -u ${USER})
+    -e LOCAL_GID=$(id -g ${USER})
+    -v ${PWD}:/mnt
+    -v $HOME/.gitconfig:/home/opx/.gitconfig
+    -v /etc/localtime:/etc/localtime:ro
+    -e OPX_GIT_TAG
+    -e OPX_POOL_PACKAGES
+    ${interactive}
+    opxhub/build:$OPX_DIST
 EOF
 
 if [[ $# -gt 0 ]]; then

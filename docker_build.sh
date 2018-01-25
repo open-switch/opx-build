@@ -15,11 +15,11 @@
 # permissions and limitations under the License.
 #
 
+# Available Options
+OPX_DIST="${OPX_DIST-unstable}"
+
 # docker image name
 build="opxhub/build"
-
-# debian distribution for opx packages
-opx_dist="${OPX_DIST-unstable}"
 
 CIDFILE=""
 cleanup () {
@@ -31,12 +31,10 @@ cleanup () {
 }
 trap cleanup EXIT
 
-which docker 2>/dev/null >&2
-
-if [ ! $? = 0 ] ; then
+command -v docker >/dev/null 2>&1 || {
   echo "You will need to install docker for this to work."
   exit 1
-fi
+}
 
 if [ "$(docker ps -f ancestor=${build}:latest --format "{{.ID}}")b" = b ] ; then
   CIDFILE=id
@@ -70,16 +68,16 @@ echo "
   ln -s /usr/local/bin/pyang /usr/bin
   curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
   curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
-  echo "deb http://dell-networking.bintray.com/opx-apt '"$opx_dist"' main" | tee -a /etc/apt/sources.list
-  echo "deb http://dl.bintray.com/open-switch/opx-apt '"$opx_dist"' main" | tee -a /etc/apt/sources.list
+  echo "deb http://dell-networking.bintray.com/opx-apt '"$OPX_DIST"' main" | tee -a /etc/apt/sources.list
+  echo "deb http://dl.bintray.com/open-switch/opx-apt '"$OPX_DIST"' main" | tee -a /etc/apt/sources.list
   cat >/etc/apt/preferences <<EOF
 Package: *
 Pin: origin ""
 Pin-Priority: 1001
 EOF
 " | git-pbuilder login --save-after-login'
-  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${build}:$opx_dist"
-  if [ "$opx_dist"b = "unstable"b ]; then
+  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${build}:$OPX_DIST"
+  if [ "$OPX_DIST"b = "unstable"b ]; then
     docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${build}:latest"
   fi
 fi

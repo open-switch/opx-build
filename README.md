@@ -88,9 +88,18 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX
 By default, build dependencies are pulled from the `unstable` distribution. To change this, use `$OPX_DIST`.
 
 ```bash
-cd opx-build/docker
-OPX_DIST=testing ./opx_setup
+OPX_DIST=testing ./docker_build.sh
 ```
+
+## Build Options
+
+The following environment variables enable different options.
+
+* `OPX_DIST=unstable`: change where package dependencies are pulled from
+* `OPX_GIT_TAG=yes`: after each build, tag the repository for publishing
+* `OPX_POOL_PACKAGES=yes`: after each build, artifacts are sent to `pkg/$repo` instead of the current directory
+
+---
 
 > [For older documentation, see b64c3be](https://github.com/open-switch/opx-build/blob/b64c3bedf6db0d5c5ed9fbe0e3ddcb5f4da3f525/README.md).
 

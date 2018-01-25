@@ -23,12 +23,14 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
 RUN pip install --upgrade pip
 RUN pip install requests-file
 
-COPY entrypoint.sh /
-COPY pbuilderrc /etc/pbuilderrc
-COPY hook.d /var/cache/pbuilder/hook.d
+COPY assets/entrypoint.sh /
+COPY assets/pbuilderrc /etc/pbuilderrc
+COPY assets/hook.d /var/cache/pbuilder/hook.d
 RUN touch /mnt/Packages
 
-ENV PATH $PATH:/mnt/opx-build/scripts
+ENV PATH $PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts
+
+COPY scripts /opt/opx-build/scripts
 
 VOLUME /mnt
 WORKDIR /mnt
