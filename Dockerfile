@@ -1,10 +1,9 @@
 FROM debian:jessie-backports
 LABEL maintainer="ops-dev@lists.openswitch.net"
 
-ENV DEBIAN_FRONTEND noninteractive
-
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     apt-utils \
+    curl \
     dh-autoreconf \
     dh-systemd \
     fakechroot \
@@ -28,9 +27,16 @@ COPY assets/pbuilderrc /etc/pbuilderrc
 COPY assets/hook.d /var/cache/pbuilder/hook.d
 RUN touch /mnt/Packages
 
+RUN curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
+RUN curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
+
 ENV PATH $PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts
 
 COPY scripts /opt/opx-build/scripts
+
+RUN mkdir -p /home/opx
+RUN cp /etc/bash.bashrc /home/opx/.bashrc
+RUN echo 'export PATH=$PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts' >> /home/opx/.bashrc
 
 VOLUME /mnt
 WORKDIR /mnt

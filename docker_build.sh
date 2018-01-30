@@ -16,10 +16,10 @@
 #
 
 # Available Options
-OPX_DIST="${OPX_DIST-unstable}"
+OPX_DIST="${OPX_DIST-latest}"
 
 # docker image name
-build="opxhub/build"
+image="opxhub/build"
 
 CIDFILE=""
 cleanup () {
@@ -27,26 +27,49 @@ cleanup () {
     docker rm -f "$(cat ${CIDFILE})"
     rm -f ${CIDFILE}
   fi
-  docker rmi -f ${build}:base
 }
 trap cleanup EXIT
 
-command -v docker >/dev/null 2>&1 || {
-  echo "You will need to install docker for this to work."
-  exit 1
+
+main() {
+  command -v docker >/dev/null 2>&1 || {
+    echo "You will need to install docker for this to work."
+    exit 1
+  }
+
+  case $OPX_DIST in
+  base)
+    build_base_layer
+    ;;
+  pbuilder)
+    build_pbuilder_layer
+    ;;
+  latest)
+    build_base_layer
+    build_pbuilder_layer
+    build_final_layer unstable
+    ;;
+  *)
+    build_final_layer "$OPX_DIST"
+    ;;
+  esac
+
+  echo "OPX Docker Images"
+  docker ps -f ancestor=${image}:pbuilder
 }
 
-if [ "$(docker ps -f ancestor=${build}:latest --format "{{.ID}}")b" = b ] ; then
-  CIDFILE=id
-
+build_base_layer() {
   # As of this writing, commands requiring elevated privileges can't
   # be executed from within a Dockerfile. To work around this, first
   # create a base image, then the run privileged commands required to
   # finish provisioning it, finally tag the fully provisioned image.
   #
   # Cf. https://github.com/docker/docker/issues/1916
+  docker build -t ${image}:base .
+}
 
-  docker build -t ${build}:base .
+build_pbuilder_layer() {
+  CIDFILE=id
 
   # Create the pbuilder chroot.
   #
@@ -59,28 +82,43 @@ if [ "$(docker ps -f ancestor=${build}:latest --format "{{.ID}}")b" = b ] ; then
   # creation in one docker run invocation.
 
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${build}:base sh -c '
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:base sh -c "
 git-pbuilder create
 git-pbuilder update
-echo "
-  apt-get install -y curl eatmydata git python-pip
-  pip install pyang
-  ln -s /usr/local/bin/pyang /usr/bin
-  curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
-  curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
-  echo "deb http://dell-networking.bintray.com/opx-apt '"$OPX_DIST"' main" | tee -a /etc/apt/sources.list
-  echo "deb http://dl.bintray.com/open-switch/opx-apt '"$OPX_DIST"' main" | tee -a /etc/apt/sources.list
-  cat >/etc/apt/preferences <<EOF
+cat <<EOF | git-pbuilder login --save-after-login
+apt-get install -y curl eatmydata git python-pip
+pip install pyang
+ln -s /usr/local/bin/pyang /usr/bin
+curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
+curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
+echo '
 Package: *
-Pin: origin ""
+Pin: origin ''
 Pin-Priority: 1001
-EOF
-" | git-pbuilder login --save-after-login'
-  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${build}:$OPX_DIST"
-  if [ "$OPX_DIST"b = "unstable"b ]; then
-    docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${build}:latest"
-  fi
-fi
+' >/etc/apt/preferences
+EOF"
 
-echo "OPX Docker Image"
-docker ps -f ancestor=${build}:latest
+  docker commit "$(cat ${CIDFILE})" "${image}:pbuilder"
+}
+
+build_final_layer() {
+  opx_dist="${1-unstable}"
+  CIDFILE=id
+  rm -f ${CIDFILE}
+
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -c "
+echo 'deb http://dell-networking.bintray.com/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
+echo 'deb http://dl.bintray.com/open-switch/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
+cat <<EOF | git-pbuilder login --save-after-login
+echo 'deb http://dell-networking.bintray.com/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
+echo 'deb http://dl.bintray.com/open-switch/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
+EOF"
+
+  docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${image}:$opx_dist"
+
+  if [ "$opx_dist"b = "unstable"b ]; then
+    docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${image}:latest"
+  fi
+}
+
+main

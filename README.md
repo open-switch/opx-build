@@ -85,10 +85,17 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX
 
 ## Creating the opx-build Docker image
 
-By default, build dependencies are pulled from the `unstable` distribution. To change this, use `$OPX_DIST`.
+Since `docker build` can not be run with `--privileged`, our docker image is composed of three layers:
+
+1. Base layer. This layer comes from the Dockerfile.
+2. Pbuilder layer. This layer comes from running `OPX_DIST=pbuilder ./docker_build.sh` and contains the pbuilder chroot for building packages.
+3. Top layer. This layer adds the OPX apt sources to `/etc/apt/sources.list` corresponding to the `$OPX_DIST` requested. By default, this is `unstable`.
+
+To build the complete docker image, run `./docker_build.sh`. After this, you can build distribution variants using the `OPX_DIST` environment variable.
 
 ```bash
-OPX_DIST=testing ./docker_build.sh
+./docker_build.sh
+OPX_DIST=2.2 ./docker_build.sh
 ```
 
 ## Build Options
