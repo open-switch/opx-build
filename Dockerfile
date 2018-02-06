@@ -35,8 +35,8 @@ ENV PATH $PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts
 COPY scripts /opt/opx-build/scripts
 
 RUN mkdir -p /home/opx
-RUN cp /etc/bash.bashrc /home/opx/.bashrc
-RUN echo 'export PATH=$PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts' >> /home/opx/.bashrc
+RUN chmod -R 777 /home/opx
+RUN echo 'export PATH=$PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts' >> /home/opx/.bash_profile
 
 VOLUME /mnt
 WORKDIR /mnt
