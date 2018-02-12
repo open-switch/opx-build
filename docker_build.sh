@@ -89,8 +89,7 @@ cat <<EOF | git-pbuilder login --save-after-login
 apt-get install -y curl eatmydata git python-pip
 pip install pyang
 ln -s /usr/local/bin/pyang /usr/bin
-curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
-curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
+apt-key adv --keyserver pgp.mit.edu --recv AD5073F1
 echo '
 Package: *
 Pin: origin ''
@@ -107,12 +106,11 @@ build_final_layer() {
   rm -f ${CIDFILE}
 
   docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -c "
-echo 'deb http://dell-networking.bintray.com/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
-echo 'deb http://dl.bintray.com/open-switch/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
+echo 'deb http://deb.openswitch.net/ $opx_dist main' | tee -a /etc/apt/sources.list
 cat <<EOF | git-pbuilder login --save-after-login
-echo 'deb http://dell-networking.bintray.com/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
-echo 'deb http://dl.bintray.com/open-switch/opx-apt $opx_dist main' | tee -a /etc/apt/sources.list
-EOF"
+echo 'deb http://deb.openswitch.net/ $opx_dist main' | tee -a /etc/apt/sources.list
+EOF
+apt-get update"
 
   docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${image}:$opx_dist"
 

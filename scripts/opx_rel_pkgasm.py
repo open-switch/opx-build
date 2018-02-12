@@ -37,9 +37,9 @@ build_suffix = ""
 verbosity = 0
 
 RELEASE_MAPPING = {
-    'oldstable': '2.0',
-    'stable': '2.1',
-    'testing': '2.2',
+    'oldstable': '2.1',
+    'stable': '2.2',
+    'testing': '2.2.1',
 }
 
 DISTRIBUTIONS = [
@@ -50,6 +50,7 @@ DISTRIBUTIONS = [
     '2.0',
     '2.1',
     '2.2',
+    '2.2.1',
 ]
 
 
@@ -625,7 +626,7 @@ class OpxRelBlueprint(object):
 
         for p in package_sets:
             for s in p.package_sources:
-                if 'copy:/mnt' in s.url or 'opx-apt' in s.url:
+                if 'copy:/mnt' in s.url or 'openswitch.net' in s.url:
                     s.distribution = dist
 
         inst_hooks = []
@@ -1100,7 +1101,7 @@ class OpxRelPackageAssembler(object):
                 subprocess.check_call([
                     "sed",
                     "-i",
-                    "s/opx-apt unstable/opx-apt {}/g".format(dist),
+                    "s#openswitch.net/ unstable#openswitch.net/ {}#g".format(dist),
                     new_hook,
                 ])
 

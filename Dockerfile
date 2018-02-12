@@ -27,8 +27,8 @@ COPY assets/pbuilderrc /etc/pbuilderrc
 COPY assets/hook.d /var/cache/pbuilder/hook.d
 RUN touch /mnt/Packages
 
-RUN curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
-RUN curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
+# get deb.openswitch.net gpg key
+RUN apt-key adv --keyserver pgp.mit.edu --recv AD5073F1
 
 ENV PATH $PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts
 

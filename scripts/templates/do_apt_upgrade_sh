@@ -22,8 +22,7 @@ chmod a+x /usr/sbin/policy-rc.d
 
 apt-get update
 apt-get install -y curl
-curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=dell-networking | apt-key add -
-curl -fsSL https://bintray.com/user/downloadSubjectPublicKey?username=open-switch | apt-key add -
+sudo apt-key adv --keyserver pgp.mit.edu --recv AD5073F1
 apt-get upgrade -y
 
 rm -f /usr/sbin/policy-rc.d

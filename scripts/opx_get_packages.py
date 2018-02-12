@@ -25,7 +25,7 @@ logger.addHandler(logging.NullHandler())
 DEFAULT_SYSROOT = None
 DEFAULT_SYSROOTDEV = None
 
-DEFAULT_PKG_URL = "http://dl.bintray.com/open-switch/opx-apt"
+DEFAULT_PKG_URL = "http://deb.openswitch.net/"
 DEFAULT_PKG_DISTRIBUTION = "unstable"
 DEFAULT_PKG_COMPONENT = "main"
 
