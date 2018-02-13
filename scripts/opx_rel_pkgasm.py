@@ -717,11 +717,12 @@ class OpxRelBlueprint(object):
         mstr += "\tlocation = %s\n" % (self.rootfs['location'])
 
         # print in order of creation by make_output
-        name = "%s-%s.%s%s" % (self.output_format['name'],
-                               self.output_format['version'],
-                               str(build_num),
-                               build_suffix
-                               )
+        name = '{}-{}{}{}'.format(
+            self.output_format['name'],
+            self.output_format['version'],
+            '.{}'.format(build_num) if build_num != 0 else '',
+            build_suffix,
+        )
 
         mstr += "creates:\n"
         if self.output_format['package_cache']:
@@ -1116,13 +1117,13 @@ class OpxRelPackageAssembler(object):
 
         print("make_output(self)")
 
-        nm_prefix = "%s%s-%s.%s%s" % (
-            "PKGS_" if self._blueprint.output_format['ONIE_pkg'] else "",
+        nm_prefix = '{}{}-{}{}{}'.format(
+            'PKGS_' if self._blueprint.output_format['ONIE_pkg'] else '',
             self._blueprint.output_format['name'],
             self._blueprint.output_format['version'],
-            str(build_num),
+            '.{}'.format(build_num) if build_num != 0 else '',
             build_suffix
-            )
+        )
 
         nm_suffix = self._blueprint.installer_suffix
 
@@ -1372,9 +1373,9 @@ def main():
 
     if args.build_info:
         build_name = 'OPX'
-        build_number = "{}.{}".format(
+        build_number = '{}{}'.format(
             rel_blueprint.output_format['version'],
-            build_num
+            '.{}'.format(build_num) if build_num != 0 else '',
         )
 
         build_info = {
