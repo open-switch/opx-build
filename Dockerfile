@@ -19,8 +19,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
  && apt-get -t jessie-backports install -y gosu \
  && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip
-RUN pip install requests-file
+RUN pip install --upgrade pip \
+ && pip install pyang requests-file \
+ && ln -s /usr/local/bin/pyang /usr/bin
 
 COPY assets/entrypoint.sh /
 COPY assets/pbuilderrc /etc/pbuilderrc
