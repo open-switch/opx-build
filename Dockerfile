@@ -29,7 +29,8 @@ COPY assets/hook.d /var/cache/pbuilder/hook.d
 RUN touch /mnt/Packages
 
 # get deb.openswitch.net gpg key
-RUN apt-key adv --keyserver pgp.mit.edu --recv AD5073F1
+RUN apt-key adv --keyserver pgp.mit.edu --recv AD5073F1 \
+ || apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1
 
 ENV PATH $PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts
 

@@ -97,4 +97,6 @@ for r in ${repos[*]}; do
     fi
 done
 
+sudo rm -f /mnt/Packages || true
+
 # vim: set sw=4 et
