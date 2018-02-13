@@ -36,24 +36,6 @@ build_num = 99999
 build_suffix = ""
 verbosity = 0
 
-RELEASE_MAPPING = {
-    'oldstable': '2.1',
-    'stable': '2.2',
-    'testing': '2.2.1',
-}
-
-DISTRIBUTIONS = [
-    'oldstable',
-    'stable',
-    'testing',
-    'unstable',
-    '2.0',
-    '2.1',
-    '2.2',
-    '2.2.1',
-]
-
-
 def _str2bool(s):
     """
     Convert string to boolean
@@ -615,10 +597,7 @@ class OpxRelBlueprint(object):
             'package_cache': _str2bool(output_elem.find('package_cache').text),
         }
 
-        if dist in RELEASE_MAPPING:
-            output_format['version'] = RELEASE_MAPPING[dist]
-        else:
-            output_format['version'] = dist
+        output_format['version'] = dist
 
         package_sets = []
         for package_set_elem in elem.findall('package_set'):
@@ -1328,7 +1307,6 @@ def main():
     parser.add_argument(
         '-d', '--dist',
         help="Distribution to build",
-        choices=DISTRIBUTIONS,
         default='unstable'
     )
 
