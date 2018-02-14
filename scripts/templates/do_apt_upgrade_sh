@@ -22,7 +22,8 @@ chmod a+x /usr/sbin/policy-rc.d
 
 apt-get update
 apt-get install -y curl
-sudo apt-key adv --keyserver pgp.mit.edu --recv AD5073F1
+sudo apt-key adv --keyserver pgp.mit.edu --recv AD5073F1 || \
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1
 apt-get upgrade -y
 
 rm -f /usr/sbin/policy-rc.d

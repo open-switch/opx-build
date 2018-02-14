@@ -27,7 +27,7 @@ DEFAULT_SYSROOTDEV = None
 
 DEFAULT_PKG_URL = "http://deb.openswitch.net/"
 DEFAULT_PKG_DISTRIBUTION = "unstable"
-DEFAULT_PKG_COMPONENT = "main"
+DEFAULT_PKG_COMPONENT = "main opx opx-non-free"
 
 
 class VersionWrapper(object):

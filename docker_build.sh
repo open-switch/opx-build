@@ -106,9 +106,9 @@ build_final_layer() {
   rm -f ${CIDFILE}
 
   docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -c "
-echo 'deb http://deb.openswitch.net/ $opx_dist main' | tee -a /etc/apt/sources.list
+echo 'deb http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list
 cat <<EOF | git-pbuilder login --save-after-login
-echo 'deb http://deb.openswitch.net/ $opx_dist main' | tee -a /etc/apt/sources.list
+echo 'deb http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list
 EOF
 apt-get update"
 

@@ -1076,6 +1076,7 @@ class OpxRelPackageAssembler(object):
             shutil.copy(hook.hook_file_path, destpath)
 
             # Change distribution in apt inst-hook
+            # TODO: Do this in python, not sed
             if hook.hook_file == '98-set-apt-sources.postinst.sh':
                 new_hook = "{}/{}".format(destpath, hook.hook_file)
                 subprocess.check_call([
