@@ -29,6 +29,7 @@ fi
 read -d '' opx_docker_command <<- EOF
 docker run
     --rm
+    --name ${USER}_$(basename $PWD)_$$
     --privileged
     -e LOCAL_UID=$(id -u ${USER})
     -e LOCAL_GID=$(id -g ${USER})
