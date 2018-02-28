@@ -1,6 +1,4 @@
 #!/bin/bash -e
-# Archive local packages and update sources
-
-(cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
+# Update local sources
 
 apt-get update

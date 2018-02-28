@@ -10,11 +10,16 @@ srcdir="/mnt/$(basename $builddir | awk -F'-' 'BEGIN {OFS="-"} {NF--; print}')/"
 # Only run on repos with yhist files
 if test -n "$(find $builddir -name '*.yhist' -type f)"; then
 
+  # Clone source to temp directory for comparison
+  work=$(mktemp -d)
+  trap "rm -rf $work" EXIT
+  git clone $srcdir $work
+
   # Copy new yhist files to src repo
-  find $builddir -name '*.yhist' -type f -print0 | xargs -0 cp -t $srcdir/history/
+  find $builddir -name '*.yhist' -type f -print0 | xargs -0 cp -t $work/history/
 
   # Fail build if any yhist files changed
-  git_diff="$(git -C $srcdir status --porcelain '*.yhist')"
+  git_diff="$(git -C $work status --porcelain '*.yhist')"
   if test -n "$git_diff"; then
     Error () { echo "$(tput setaf 1)$*$(tput sgr 0)"; }
     Error "================================================="

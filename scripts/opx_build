@@ -73,6 +73,9 @@ for r in ${repos[*]}; do
         )
     elif [ -e "$r/debian/control" ]; then
         (
+            # create local package cache
+            (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
+
             cd "$r"
 
             if [ "$OPX_GIT_TAG"b = "yes"b ]; then
@@ -97,6 +100,6 @@ for r in ${repos[*]}; do
     fi
 done
 
-sudo rm -f /mnt/Packages || true
+rm -f /mnt/Packages || true
 
 # vim: set sw=4 et
