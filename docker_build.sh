@@ -82,7 +82,7 @@ build_pbuilder_layer() {
   # creation in one docker run invocation.
 
   rm -f ${CIDFILE}
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:base sh -c "
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:base sh -exc "
 git-pbuilder create
 git-pbuilder update
 cat <<EOF | git-pbuilder login --save-after-login
@@ -105,7 +105,7 @@ build_final_layer() {
   CIDFILE=id
   rm -f ${CIDFILE}
 
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -c "
+  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -exc "
 echo 'deb http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list
 cat <<EOF | git-pbuilder login --save-after-login
 echo 'deb http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list

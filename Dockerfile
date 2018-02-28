@@ -21,24 +21,21 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
 
 RUN pip install --upgrade pip \
  && pip install pyang requests-file \
- && ln -s /usr/local/bin/pyang /usr/bin
-
-COPY assets/entrypoint.sh /
-COPY assets/pbuilderrc /etc/pbuilderrc
-COPY assets/hook.d /var/cache/pbuilder/hook.d
-RUN touch /mnt/Packages
-
-# get deb.openswitch.net gpg key
-RUN apt-key adv --keyserver pgp.mit.edu --recv AD5073F1 \
+ && ln -s /usr/local/bin/pyang /usr/bin \
+ && touch /mnt/Packages \
+ && apt-key adv --keyserver pgp.mit.edu --recv AD5073F1 \
  || apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1
+
+RUN mkdir -p /home/opx \
+ && chmod -R 777 /home/opx \
+ && echo 'export PATH=$PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts' >> /home/opx/.bash_profile
 
 ENV PATH $PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts
 
 COPY scripts /opt/opx-build/scripts
-
-RUN mkdir -p /home/opx
-RUN chmod -R 777 /home/opx
-RUN echo 'export PATH=$PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts' >> /home/opx/.bash_profile
+COPY assets/entrypoint.sh /
+COPY assets/pbuilderrc /etc/pbuilderrc
+COPY assets/hook.d /var/cache/pbuilder/hook.d
 
 VOLUME /mnt
 WORKDIR /mnt
