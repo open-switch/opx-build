@@ -23,8 +23,8 @@ RUN pip install --upgrade pip \
  && pip install pyang requests-file \
  && ln -s /usr/local/bin/pyang /usr/bin \
  && touch /mnt/Packages \
- && apt-key adv --keyserver pgp.mit.edu --recv AD5073F1 \
- || apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1
+ && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1 \
+ || apt-key adv --keyserver pgp.mit.edu --recv AD5073F1
 
 RUN mkdir -p /home/opx \
  && chmod -R 777 /home/opx \

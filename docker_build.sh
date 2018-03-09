@@ -105,12 +105,26 @@ build_final_layer() {
   CIDFILE=id
   rm -f ${CIDFILE}
 
-  docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -exc "
+  case $opx_dist in
+    latest|unstable|testing|stable)
+      docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -exc "
+echo 'deb     http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list
+echo 'deb-src http://deb.openswitch.net/ $opx_dist      opx' | tee -a /etc/apt/sources.list
+cat <<EOF | git-pbuilder login --save-after-login
+echo 'deb     http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list
+echo 'deb-src http://deb.openswitch.net/ $opx_dist      opx' | tee -a /etc/apt/sources.list
+EOF
+apt-get update"
+      ;;
+    *)
+      docker run --cidfile ${CIDFILE} --privileged -e DIST=jessie ${image}:pbuilder sh -exc "
 echo 'deb http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list
 cat <<EOF | git-pbuilder login --save-after-login
 echo 'deb http://deb.openswitch.net/ $opx_dist main opx opx-non-free' | tee -a /etc/apt/sources.list
 EOF
 apt-get update"
+      ;;
+  esac
 
   docker commit --change 'CMD ["bash"]' --change 'ENTRYPOINT ["/entrypoint.sh"]' "$(cat ${CIDFILE})" "${image}:$opx_dist"
 
