@@ -605,7 +605,8 @@ class OpxRelBlueprint(object):
 
         for p in package_sets:
             for s in p.package_sources:
-                if 'copy:/mnt' in s.url or 'openswitch.net' in s.url:
+                if ('copy:/mnt' in s.url or ('openswitch.net' in s.url and
+                                             'contrib' not in s.url)):
                     s.distribution = dist
 
         inst_hooks = []
