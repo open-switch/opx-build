@@ -35,20 +35,17 @@ The `repo` commands download all of the source files that are necessary to build
 
 ### Build packages
 
-By default, build dependencies are pulled from the `unstable` distribution. To change this, use `$OPX_DIST`.
+By default, build dependencies are pulled from the `unstable` distribution. To change this, use `$OPX_RELEASE`.
 
 ```bash
 # Build all repositories
 opx-build/scripts/opx_run opx_build all
 
-# Build a single repository (e.g., opx-logging)
+# Build a single repository
 opx-build/scripts/opx_run opx_build opx-logging
 
-# Build multiple repositories
-opx-build/scripts/opx_run opx_build opx-logging opx-nas-common
-
-# Build against the testing distribution
-OPX_DIST=testing opx-build/scripts/opx_run opx_build all
+# Build against the 2.2.1 release
+OPX_RELEASE=2.2.1 opx-build/scripts/opx_run opx_build all
 ```
 
 ## Manual build of single repository
@@ -85,24 +82,16 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py -b opx-onie-installer/release_bp/OPX
 
 ## Creating the opx-build Docker image
 
-Since `docker build` can not be run with `--privileged`, our docker image is composed of three layers:
-
-1. Base layer. This layer comes from the Dockerfile.
-2. Pbuilder layer. This layer comes from running `OPX_DIST=pbuilder ./docker_build.sh` and contains the pbuilder chroot for building packages.
-3. Top layer. This layer adds the OPX apt sources to `/etc/apt/sources.list` corresponding to the `$OPX_DIST` requested. By default, this is `unstable`.
-
-To build the complete docker image, run `./docker_build.sh`. After this, you can build distribution variants using the `OPX_DIST` environment variable.
-
 ```bash
 ./docker_build.sh
-OPX_DIST=2.2 ./docker_build.sh
 ```
+
+The default Docker image builds against the unstable OPX distribution. When other distributions are requested, pbuidler chroots are created on the fly. These chroots are lost when the container is removed, but only take 7.5sec to create.
 
 ## Build Options
 
 The following environment variables enable different options.
 
-* `OPX_DIST=unstable`: change where package dependencies are pulled from
 * `OPX_GIT_TAG=yes`: after each build, tag the repository for publishing
 * `OPX_POOL_PACKAGES=yes`: after each build, artifacts are sent to `pkg/$repo` instead of the current directory
 
