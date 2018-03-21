@@ -7,6 +7,11 @@ TERM=dumb
 builddir="$(readlink -f /tmp/buildd/*/debian/..)/"
 srcdir="/mnt/$(basename $builddir | awk -F'-' 'BEGIN {OFS="-"} {NF--; print}')/"
 
+if [ ! -d "$srcdir/history/" ]; then
+  echo "Skipping older repository without history directory..." >&2
+  exit 0
+fi
+
 # Only run on repos with yhist files
 if test -n "$(find $builddir -name '*.yhist' -type f)"; then
 

@@ -5,7 +5,7 @@ export DIST=${DEBIAN_DIST}
 git-pbuilder create
 git-pbuilder update
 cat <<PBUILDER | git-pbuilder login --save-after-login
-apt-get install -y curl eatmydata git python-pip
+apt-get install -y curl eatmydata git python-lxml python-pip
 
 pip install pyang
 ln -s /usr/local/bin/pyang /usr/bin

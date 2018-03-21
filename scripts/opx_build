@@ -63,11 +63,9 @@ for r in ${repos[*]}; do
       continue
     fi
 
-    if [ -e "$r/control" ]; then
+    if [ -e "$r/debian/control" ] && [ ! -e "$r/debian/rules" ]; then
         (
-            cd "$r"
-            equivs-build control
-            mv ./*.deb ..
+            dpkg-deb -b "$r" .
         )
     elif [ -e "$r/debian/control" ]; then
         (
