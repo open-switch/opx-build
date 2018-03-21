@@ -58,9 +58,9 @@ OPX_RELEASE=2.2.1 opx-build/scripts/opx_run opx_build all
 
 Sometimes, it is helpful to build a single repository with finer control.
 
-It is always possible to enter the docker via opx_run, manually install
-prerequisite packages using "apt-get install" (for required Debian packages),
-"dpkg -i" (for required OPX packages), "pip install" (for required Python
+It is always possible to enter the docker via `opx_run`, manually install
+prerequisite packages using `apt-get install` (for required Debian packages),
+`dpkg -i` (for required OPX packages), `pip install` (for required Python
 packages), etc., and run the command:
 
 ```bash
@@ -69,7 +69,7 @@ fakeroot debian/rules binary
 
 This will allow you to see all files created during the build, such as object
 files, libtool files, C++ source and header files for Yang models, etc., that
-would normally be cleaned up after an opx_build build terminates.
+would normally be cleaned up after an `opx_build` build terminates.
 
 It is possible to build unstripped executables by adding the following line to
 the end of the file debian/rules:

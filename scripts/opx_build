@@ -15,6 +15,7 @@ fi
 
 # Create pbuilder root if necessary
 if [[ ! -d "/var/cache/pbuilder/base-${DIST}.cow" ]]; then
+  touch /mnt/Packages
   sudo /pbuilder_update.sh "$OPX_RELEASE"
 fi
 
