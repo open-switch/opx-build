@@ -1,6 +1,9 @@
 #!/bin/bash -e
 # Drop into a shell on build failure
 
+# stdin must be a terminal
+if [ ! -t 0 ]; then exit 0; fi
+
 Error () { echo "$(tput setaf 1)[ERROR] $*$(tput sgr 0)"; }
 
 Error "Build failed. Preparing shell for diagnosis."
