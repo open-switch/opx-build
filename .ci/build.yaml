@@ -1,0 +1,26 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: opxhub/dcind
+inputs:
+- name: src
+outputs:
+- name: dist
+params:
+- DEBIAN: jessie
+run:
+  path: bash
+  args:
+  - -ec
+  - |
+    source /docker-lib.sh; start_docker
+    pushd src
+    ./docker_build.sh
+    version="$(git rev-parse --short HEAD)-$DEBIAN"
+    popd
+    docker images
+    docker save opxhub/build:latest -o dist/image.tar
+    echo $version >dist/version
+

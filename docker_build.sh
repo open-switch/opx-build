@@ -5,13 +5,7 @@ export OPX_RELEASE=unstable
 # currently tracked release
 export DEBIAN_DIST=jessie
 # docker image tag, can't assume git is available
-if command -v git >/dev/null 2>&1; then
-  VERSION="$(git log -1 --pretty=%h)-${DEBIAN_DIST}"
-else
-  # only works for master, but enough for now
-  # proper solution is to install git
-  VERSION="$(cat .git/refs/heads/master | cut -c1-7)-${DEBIAN_DIST}"
-fi
+VERSION="$(git log -1 --pretty=%h)-${DEBIAN_DIST}"
 # docker image name
 IMAGE="opxhub/build"
 # file where container id is saved for cleanup
