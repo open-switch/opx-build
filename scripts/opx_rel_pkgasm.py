@@ -1273,7 +1273,7 @@ class OpxRelPackageAssembler(object):
 
 def index_local_packages(dist):
     """Run the idx-pkgs script from opx-build/scripts with the correct dist."""
-    cmd = 'opx-build/scripts/idx-pkgs'
+    cmd = '{}/idx-pkgs'.format(os.path.dirname(__file__))
     try:
         subprocess.check_call([cmd, dist])
     except subprocess.CalledProcessError as ex:
