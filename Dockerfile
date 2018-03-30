@@ -18,22 +18,21 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     wget \
  && apt-get -t jessie-backports install -y gosu
 
-RUN pip install --upgrade pip \
- && pip install pyang requests-file \
+RUN pip2 install --upgrade pip \
+ && pip2 install pyang requests-file \
  && ln -s /usr/local/bin/pyang /usr/bin \
  && touch /mnt/Packages \
  && echo "deb     http://deb.openswitch.net/ unstable main opx opx-non-free" | tee -a /etc/apt/sources.list \
  && echo "deb-src http://deb.openswitch.net/ unstable      opx" | tee -a /etc/apt/sources.list \
  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1 \
- && apt-get update
+ && apt-get update \
+ && mkdir -p /home/opx \
+ && chmod -R 777 /home/opx
 
-RUN mkdir -p /home/opx \
- && chmod -R 777 /home/opx \
- && echo 'export PATH=$PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts' >> /home/opx/.bash_profile
-
-ENV PATH $PATH:/opt/opx-build/scripts:/mnt/opx-build/scripts
+ENV PATH /opt/opx-build/scripts:/mnt/opx-build/scripts:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 COPY scripts /opt/opx-build/scripts
+COPY assets/bash_profile /home/opx/.bash_profile
 COPY assets/entrypoint.sh /
 COPY assets/hook.d /var/cache/pbuilder/hook.d
 COPY assets/pbuilder_create.sh /
