@@ -10,8 +10,6 @@ apt-get install -y curl eatmydata git python-lxml python-pip
 pip install pyang
 ln -s /usr/local/bin/pyang /usr/bin
 
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1
-
 echo 'Package: *
 Pin: origin ""
 Pin-Priority: 1001
