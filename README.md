@@ -127,8 +127,6 @@ always point to the most recently published image.
 These environment variables enable different options.
 
 * `OPX_GIT_TAG=yes`: after each build, tag the repository for publishing
-* `OPX_POOL_PACKAGES=yes`: after each build, artifacts are sent to `pkg/$repo`
-  instead of the current directory
 * `OPX_RELEASE=2.2.1`: change which OPX release to build against
 
 ---

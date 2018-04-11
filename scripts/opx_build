@@ -2,7 +2,6 @@
 
 # Available Options
 OPX_GIT_TAG=${OPX_GIT_TAG-no}
-OPX_POOL_PACKAGES=${OPX_POOL_PACKAGES-no}
 
 DEBIAN_DIST=$(lsb_release --codename --short)
 OPX_RELEASE=${OPX_RELEASE-unstable}
@@ -22,34 +21,35 @@ fi
 # Define list of repositories in dependency order.
 # TODO: read the debian/control files and compute the dependency graph.
 repos=(
-    opx-core
-    opx-logging
-    opx-common-utils
-    opx-cps
-    opx-base-model
-    opx-db-sql
-    opx-sai-api
-    opx-sai-vm
-    opx-nas-common
-    opx-nas-linux
-    opx-nas-ndi-api
-    opx-nas-ndi
-    opx-nas-acl
-    opx-nas-interface
-    opx-nas-l2
-    opx-nas-l3
-    opx-nas-qos
-    opx-nas-daemon
-    opx-platform-config
-    opx-sdi-sys
-    opx-pas
-    opx-tmpctl
-    opx-tools
-    opx-alarm
+opx-core
+opx-logging
+opx-common-utils
+opx-cps
+opx-base-model
+opx-db-sql
+opx-sai-api
+opx-sai-vm
+opx-nas-common
+opx-nas-linux
+opx-nas-ndi-api
+opx-nas-ndi
+opx-nas-acl
+opx-nas-interface
+opx-nas-l2
+opx-nas-l3
+opx-nas-qos
+opx-nas-daemon
+opx-platform-config
+opx-sdi-sys
+opx-pas
+opx-tmpctl
+opx-tools
+opx-alarm
+opx-snmp
 )
 
 if [ $# -gt 0 ] && [ "$1" != "all" ]; then
-    repos=( "$@" )
+  repos=( "$@" )
 fi
 
 # Use temporary output directory isolate the output of each build
@@ -58,44 +58,48 @@ export GIT_PBUILDER_OUTPUT_DIR
 trap 'rm -rf ${GIT_PBUILDER_OUTPUT_DIR}' EXIT
 
 for r in ${repos[*]}; do
-    if [ ! -d "$r" ]; then
-      echo "$r does not exist..."
-      continue
-    fi
+  if [ ! -d "$r" ]; then
+    echo "$r does not exist..."
+    continue
+  fi
 
-    if [ -e "$r/debian/control" ] && [ ! -e "$r/debian/rules" ]; then
-        (
-            dpkg-deb -b "$r" .
-        )
-    elif [ -e "$r/debian/control" ]; then
-        (
-            # create local package cache
-            (cd /mnt && dpkg-scanpackages -m . >Packages)
+  OUTPUT_DIR="pkg/$r"
+  mkdir -p "$OUTPUT_DIR"
 
-            cd "$r"
+  if [ -e "$r/debian/control" ] && [ ! -e "$r/debian/rules" ]; then
+    dpkg-deb -b "$r" "$OUTPUT_DIR"
+    echo "Build results can be found in $OUTPUT_DIR."
+  elif [ -e "$r/debian/control" ]; then
+    (
+    # create local package cache
+    (cd /mnt && dpkg-scanpackages -m . >Packages)
 
-            if [ "$OPX_GIT_TAG"b = "yes"b ]; then
-              gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new --git-tag
-            else
-              gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
-            fi
+    cd "$r"
 
-            cp "${GIT_PBUILDER_OUTPUT_DIR}"/*.deb ..
-
-            # clear output directory for next package
-            # question mark ensures that rm -rf /* is never run
-            rm -rf "${GIT_PBUILDER_OUTPUT_DIR:?}"/*
-        )
+    if [ "$OPX_GIT_TAG"b = "yes"b ]; then
+      gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new --git-tag
     else
-        echo "No control file found in $r. Continuing..."
+      gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
     fi
 
-    if [ "$OPX_POOL_PACKAGES"b = "yes"b ]; then
-      mkdir -p "./pkg/$r"
-      find . -maxdepth 1 \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) -exec mv -t "./pkg/$r/" {} +
-    fi
+    find "$GIT_PBUILDER_OUTPUT_DIR" \
+      \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) \
+      -exec cp -t "../$OUTPUT_DIR/" {} +
+    find .. -maxdepth 1 \
+      \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) \
+      -exec rm -f {} +
+    echo "Build results can be found in $OUTPUT_DIR."
+
+    # clear output directory for next package
+    # question mark ensures that rm -rf /* is never run
+    rm -rf "${GIT_PBUILDER_OUTPUT_DIR:?}"/*
+    )
+  else
+    echo "No control file found in $r. Continuing..."
+  fi
+
 done
 
 rm -f /mnt/Packages || true
 
-# vim: set sw=4 et
+# vim: set sw=2 et
