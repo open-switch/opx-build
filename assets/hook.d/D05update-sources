@@ -1,4 +1,14 @@
 #!/bin/bash -e
-# Update local sources
+# Update package sources
+
+cat <<EOF >/etc/apt/sources.list.d/opx.list
+deb http://deb.openswitch.net/ $OPX_RELEASE main opx opx-non-free
+deb http://deb.openswitch.net/contrib stable contrib
+EOF
+
+if [[ "$OPX_RELEASE" =~ ^(unstable|testing|stable)$ ]]; then
+  echo "deb-src http://deb.openswitch.net/ $OPX_RELEASE opx" \
+    >>/etc/apt/sources.list.d/opx.list
+fi
 
 apt-get update

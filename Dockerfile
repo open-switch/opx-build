@@ -54,7 +54,6 @@ COPY assets/bashrc /home/opx/.bashrc
 COPY assets/entrypoint.sh /
 COPY assets/hook.d /var/cache/pbuilder/hook.d
 COPY assets/pbuilder_create.sh /
-COPY assets/pbuilder_update.sh /
 COPY assets/pbuilderrc /etc/pbuilderrc
 COPY scripts /opt/opx-build/scripts
 

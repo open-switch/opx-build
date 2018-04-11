@@ -4,6 +4,10 @@
 # the default template
 #
 # read pbuilderrc.5 document for notes on specific options.
+
+: ${DIST:="$(lsb_release --short --codename)"}
+: ${ARCH:="$(dpkg --print-architecture)"}
+
 APTKEYRINGS=( /usr/share/keyrings/opx-archive-keyring.gpg )
 BINDMOUNTS="/mnt"
 HOOKDIR=/var/cache/pbuilder/hook.d

@@ -1,11 +1,7 @@
 #!/bin/bash -e
 
-# default package distribution
-export OPX_RELEASE=unstable
-# currently tracked release
-export DEBIAN_DIST=jessie
-# docker image tag, can't assume git is available
-VERSION="$(git log -1 --pretty=%h)-${DEBIAN_DIST}"
+# docker image tag
+VERSION="$(git log -1 --pretty=%h)"
 # docker image name
 IMAGE="opxhub/build"
 # file where container id is saved for cleanup
@@ -27,9 +23,6 @@ main() {
 
   docker build -t ${IMAGE}:base .
   pbuilder_create
-
-  echo "OPX Docker Images"
-  docker ps -f ancestor=${IMAGE}:base
 }
 
 pbuilder_create() {
@@ -47,8 +40,8 @@ pbuilder_create() {
   docker run \
     --cidfile ${CIDFILE} \
     --privileged \
-    -e DEBIAN_DIST \
-    -e OPX_RELEASE \
+    -e ARCH=amd64 \
+    -e DIST=jessie \
     "${IMAGE}:base" \
     /pbuilder_create.sh
 

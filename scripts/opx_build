@@ -1,22 +1,22 @@
 #!/bin/bash -e
 
-# Available Options
-OPX_GIT_TAG=${OPX_GIT_TAG-no}
+# Use temporary output directory isolate the output of each build
+GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
+export GIT_PBUILDER_OUTPUT_DIR
 
-DEBIAN_DIST=$(lsb_release --codename --short)
-OPX_RELEASE=${OPX_RELEASE-unstable}
+cleanup () {
+  rm -rf "${GIT_PBUILDER_OUTPUT_DIR}"
+  rm -f ./*.{dsc,tar.gz,build,changes}
+}
+trap cleanup EXIT
 
-if [[ "$OPX_RELEASE" == unstable ]]; then
-  DIST=$DEBIAN_DIST
-else
-  DIST=${DEBIAN_DIST}_${OPX_RELEASE}
-fi
+# Available options
+export OPX_GIT_TAG="${OPX_GIT_TAG:-no}"
 
-# Create pbuilder root if necessary
-if [[ ! -d "/var/cache/pbuilder/base-${DIST}.cow" ]]; then
-  touch /mnt/Packages
-  sudo /pbuilder_update.sh "$OPX_RELEASE"
-fi
+# Set build options
+export OPX_RELEASE="${OPX_RELEASE:-unstable}"
+export DIST="${DIST:-jessie}"
+export ARCH="${ARCH:-amd64}"
 
 # Define list of repositories in dependency order.
 # TODO: read the debian/control files and compute the dependency graph.
@@ -52,11 +52,6 @@ if [ $# -gt 0 ] && [ "$1" != "all" ]; then
   repos=( "$@" )
 fi
 
-# Use temporary output directory isolate the output of each build
-GIT_PBUILDER_OUTPUT_DIR=$(mktemp -d)
-export GIT_PBUILDER_OUTPUT_DIR
-trap 'rm -rf ${GIT_PBUILDER_OUTPUT_DIR}' EXIT
-
 for r in ${repos[*]}; do
   if [ ! -d "$r" ]; then
     echo "$r does not exist..."
@@ -77,27 +72,29 @@ for r in ${repos[*]}; do
     cd "$r"
 
     if [ "$OPX_GIT_TAG"b = "yes"b ]; then
-      gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new --git-tag
+      gbp buildpackage --git-tag-only
     else
-      gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
-    fi
+      gbp buildpackage \
+        --git-pbuilder \
+        --git-dist="$DIST" \
+        --git-arch="$ARCH" \
+        --git-ignore-branch \
+        --git-ignore-new
 
-    find "$GIT_PBUILDER_OUTPUT_DIR" \
-      \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) \
-      -exec cp -t "../$OUTPUT_DIR/" {} +
-    find .. -maxdepth 1 \
-      \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) \
-      -exec rm -f {} +
-    echo "Build results can be found in $OUTPUT_DIR."
+      find "$GIT_PBUILDER_OUTPUT_DIR" \
+        \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) \
+        -exec cp -t "../$OUTPUT_DIR/" {} +
+      echo "Build results can be found in $OUTPUT_DIR."
+    fi
 
     # clear output directory for next package
     # question mark ensures that rm -rf /* is never run
     rm -rf "${GIT_PBUILDER_OUTPUT_DIR:?}"/*
     )
   else
-    echo "No control file found in $r. Continuing..."
+    echo "Error. No debian/control file found in $r."
+    exit 1
   fi
-
 done
 
 rm -f /mnt/Packages || true

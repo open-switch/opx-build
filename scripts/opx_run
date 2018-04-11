@@ -1,44 +1,47 @@
 #!/bin/bash
 
-# default package distribution
-export OPX_RELEASE=${OPX_RELEASE-unstable}
+# available options
+export OPX_GIT_TAG="${OPX_GIT_TAG:-no}"
+
+# package distribution
+export OPX_RELEASE="${OPX_RELEASE:-unstable}"
 # currently tracked release
-export DEBIAN_DIST=${DEBIAN_DIST-jessie}
-# docker image tag
-VERSION="${VERSION-latest}"
+export DIST="${DIST:-jessie}"
+export ARCH="${ARCH:-amd64}"
+
 # docker image name
 IMAGE="opxhub/build"
-
-# Available Options
-OPX_GIT_TAG=${OPX_GIT_TAG-no}
+# docker image tag
+VERSION="${VERSION:-latest}"
 
 interactive="-i"
 if [ -t 1 ]; then
-    # STDOUT is attached to TTY
-    interactive="-it"
+  # STDOUT is attached to TTY
+  interactive="-it"
 fi
 
 read -d '' opx_docker_command <<- EOF
 docker run
-    --rm
-    --name ${USER}_$(basename $PWD)_$$
-    --privileged
-    -e LOCAL_UID=$(id -u ${USER})
-    -e LOCAL_GID=$(id -g ${USER})
-    -v ${PWD}:/mnt
-    -v $HOME/.gitconfig:/home/opx/.gitconfig
-    -v /etc/localtime:/etc/localtime:ro
-    -e DEBIAN_DIST
-    -e OPX_RELEASE
-    -e OPX_GIT_TAG
-    ${interactive}
-    ${IMAGE}:${VERSION}
+  --rm
+  --name ${USER}_$(basename $PWD)_$$
+  --privileged
+  -e LOCAL_UID=$(id -u ${USER})
+  -e LOCAL_GID=$(id -g ${USER})
+  -v ${PWD}:/mnt
+  -v $HOME/.gitconfig:/home/opx/.gitconfig
+  -v /etc/localtime:/etc/localtime:ro
+  -e ARCH
+  -e DIST
+  -e OPX_RELEASE
+  -e OPX_GIT_TAG
+  ${interactive}
+  ${IMAGE}:${VERSION}
 EOF
 
 if [[ $# -gt 0 ]]; then
-    # run command directly
-    $opx_docker_command bash -ic "$*"
+  # run command directly
+  $opx_docker_command bash -ic "$*"
 else
-    # launch interactive shell
-    $opx_docker_command
+  # launch interactive shell
+  $opx_docker_command
 fi
