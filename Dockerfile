@@ -47,7 +47,7 @@ RUN mkdir -p /home/opx && chmod -R 777 /home/opx \
  && echo 'Defaults env_keep += "OPX_RELEASE DIST ARCH"' >>/etc/sudoers
 
 # Stops pbuilder create from failing
-RUN touch /mnt/Packages
+RUN mkdir -p /mnt/pool/jessie-amd64 && touch /mnt/pool/jessie-amd64/Packages
 
 COPY assets/profile /etc/profile.d/opx.sh
 COPY assets/entrypoint.sh /

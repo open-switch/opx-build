@@ -58,7 +58,8 @@ for r in ${repos[*]}; do
     continue
   fi
 
-  OUTPUT_DIR="pkg/$r"
+  POOL="pool/${DIST}-${ARCH}"
+  OUTPUT_DIR="$POOL/$r"
   mkdir -p "$OUTPUT_DIR"
 
   if [ -e "$r/debian/control" ] && [ ! -e "$r/debian/rules" ]; then
@@ -67,7 +68,7 @@ for r in ${repos[*]}; do
   elif [ -e "$r/debian/control" ]; then
     (
     # create local package cache
-    (cd /mnt && dpkg-scanpackages -m . >Packages)
+    (cd "/mnt/$POOL" && dpkg-scanpackages -m . >Packages)
 
     cd "$r"
 

@@ -9,7 +9,7 @@
 : ${ARCH:="$(dpkg --print-architecture)"}
 
 APTKEYRINGS=( /usr/share/keyrings/opx-archive-keyring.gpg )
-BINDMOUNTS="/mnt"
+BINDMOUNTS="/mnt/pool/${DIST}-${ARCH}"
 HOOKDIR=/var/cache/pbuilder/hook.d
 MIRRORSITE=http://deb.debian.org/debian
-OTHERMIRROR="deb [trusted=yes] file:///mnt ./"
+OTHERMIRROR="deb [trusted=yes] file:///mnt/pool/${DIST}-${ARCH} ./"
