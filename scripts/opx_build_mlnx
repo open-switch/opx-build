@@ -59,7 +59,7 @@ for r in ${repos[*]}; do
         gbp buildpackage --git-dist="$DIST" --git-pbuilder --git-ignore-branch --git-ignore-new
 
         cp "${GIT_PBUILDER_OUTPUT_DIR}"/*.deb ..
-        (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
+        (cd /mnt && dpkg-scanpackages -m . >Packages)
 
         # clear output directory for next package
         # question mark ensures that rm -rf /* is never run

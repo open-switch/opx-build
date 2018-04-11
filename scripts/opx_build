@@ -70,7 +70,7 @@ for r in ${repos[*]}; do
     elif [ -e "$r/debian/control" ]; then
         (
             # create local package cache
-            (cd /mnt && apt-ftparchive packages . >Packages 2>/dev/null)
+            (cd /mnt && dpkg-scanpackages -m . >Packages)
 
             cd "$r"
 

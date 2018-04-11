@@ -14,4 +14,4 @@ LOC="dists/$DIST/$COMP/binary-$ARCH"
 
 rm -fr dists
 mkdir -p "$LOC/"
-apt-ftparchive packages . > "$LOC/Packages"
+dpkg-scanpackages -m . >"$LOC/Packages"

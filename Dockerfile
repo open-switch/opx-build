@@ -2,7 +2,6 @@ FROM debian:jessie-backports
 LABEL maintainer="ops-dev@lists.openswitch.net"
 
 RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
-    apt-utils \
     build-essential \
     cowbuilder \
     curl \
