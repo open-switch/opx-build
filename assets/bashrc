@@ -1,0 +1,8 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PATH=/opt/opx-build/scripts:$PATH
+
+export PATH
+
+alias ll="ls -Fhl --color=auto"
+alias la="ls -AFhl --color=auto"
+alias less="less -FSRXc"

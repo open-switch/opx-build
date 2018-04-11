@@ -39,7 +39,7 @@ EOF
 
 if [[ $# -gt 0 ]]; then
     # run command directly
-    $opx_docker_command sh -c "$*"
+    $opx_docker_command bash -ic "$*"
 else
     # launch interactive shell
     $opx_docker_command

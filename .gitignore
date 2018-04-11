@@ -99,3 +99,5 @@ ENV/
 .mypy_cache/
 
 .cid
+
+.DS_Store

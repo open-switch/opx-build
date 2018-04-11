@@ -1,12 +1,17 @@
 FROM debian:jessie-backports
 LABEL maintainer="ops-dev@lists.openswitch.net"
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
     apt-utils \
+    build-essential \
+    cowbuilder \
     curl \
+    debian-archive-keyring \
+    debootstrap \
     dh-autoreconf \
     dh-systemd \
     fakechroot \
+    fakeroot \
     git-buildpackage \
     lsb-release \
     python-apt \
@@ -16,28 +21,43 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     python-requests \
     vim \
     wget \
- && apt-get -t jessie-backports install -y gosu
+ && apt-get -t jessie-backports install -y gosu \
+ && apt-get -qq autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN pip2 install --upgrade pip \
- && pip2 install pyang requests-file \
- && ln -s /usr/local/bin/pyang /usr/bin \
- && touch /mnt/Packages \
- && echo "deb     http://deb.openswitch.net/ unstable main opx opx-non-free" | tee -a /etc/apt/sources.list \
- && echo "deb-src http://deb.openswitch.net/ unstable      opx" | tee -a /etc/apt/sources.list \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys AD5073F1 \
- && apt-get update \
- && mkdir -p /home/opx \
- && chmod -R 777 /home/opx
+# Pyang not available as Debian package
+RUN pip2 install pyang requests-file \
+ && ln -s /usr/local/bin/pyang /usr/bin
 
-ENV PATH /opt/opx-build/scripts:/mnt/opx-build/scripts:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# Get OPX and other Debian GPG keys
+RUN gpg --import /usr/share/keyrings/debian-archive-keyring.gpg \
+ && gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-key AD5073F1 \
+ && gpg --export AD5073F1 >/usr/share/keyrings/opx-archive-keyring.gpg \
+ && apt-key add /usr/share/keyrings/opx-archive-keyring.gpg
 
-COPY scripts /opt/opx-build/scripts
+# Add OPX package sources
+RUN mkdir -p /etc/apt/sources.list.d/ \
+ && echo "deb http://deb.openswitch.net/ unstable main opx opx-non-free" >>/etc/apt/sources.list.d/opx.list \
+ && echo "deb-src http://deb.openswitch.net/ unstable opx" >>/etc/apt/sources.list.d/opx.list \
+ && echo "deb http://deb.openswitch.net/contrib stable contrib" >>/etc/apt/sources.list.d/opx.list \
+ && apt-get -qq update
+
+# Set up for the user we will create at runtime
+RUN mkdir -p /home/opx && chmod -R 777 /home/opx \
+ && echo 'opx ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers \
+ && echo '%opx ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers \
+ && echo 'Defaults env_keep += "OPX_RELEASE DIST ARCH"' >>/etc/sudoers
+
+# Stops pbuilder create from failing
+RUN touch /mnt/Packages
+
 COPY assets/bash_profile /home/opx/.bash_profile
+COPY assets/bashrc /home/opx/.bashrc
 COPY assets/entrypoint.sh /
 COPY assets/hook.d /var/cache/pbuilder/hook.d
 COPY assets/pbuilder_create.sh /
 COPY assets/pbuilder_update.sh /
 COPY assets/pbuilderrc /etc/pbuilderrc
+COPY scripts /opt/opx-build/scripts
 
 VOLUME /mnt
 WORKDIR /mnt
