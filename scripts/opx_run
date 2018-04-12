@@ -40,8 +40,11 @@ EOF
 
 if [[ $# -gt 0 ]]; then
   # run command directly
-  $opx_docker_command bash -ic "$*"
+  # not using bash because tar fails to complete
+  # root cause unknown (see opx_rel_pkgasm.py:tar_in)
+  $opx_docker_command sh -l -c "$*"
 else
   # launch interactive shell
-  $opx_docker_command
+  # using bash here because tar does not fail in an interactive shell
+  $opx_docker_command bash -l
 fi

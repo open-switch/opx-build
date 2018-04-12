@@ -49,8 +49,7 @@ RUN mkdir -p /home/opx && chmod -R 777 /home/opx \
 # Stops pbuilder create from failing
 RUN touch /mnt/Packages
 
-COPY assets/bash_profile /home/opx/.bash_profile
-COPY assets/bashrc /home/opx/.bashrc
+COPY assets/profile /etc/profile.d/opx.sh
 COPY assets/entrypoint.sh /
 COPY assets/hook.d /var/cache/pbuilder/hook.d
 COPY assets/pbuilder_create.sh /
