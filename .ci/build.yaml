@@ -9,7 +9,7 @@ inputs:
 outputs:
 - name: dist
 params:
-- DEBIAN: jessie
+- DIST: jessie
 run:
   path: bash
   args:
@@ -18,7 +18,7 @@ run:
     source /docker-lib.sh; start_docker
     pushd src
     ./docker_build.sh
-    version="$(git rev-parse --short HEAD)-$DEBIAN"
+    version="$(git rev-parse --short HEAD)-$DIST"
     popd
     docker images
     docker save opxhub/build:latest -o dist/image.tar

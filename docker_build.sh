@@ -1,7 +1,10 @@
 #!/bin/bash -e
 
+DEFAULT_DIST=jessie
+export DIST="${DIST:-$DEFAULT_DIST}"
+
 # docker image tag
-VERSION="$(git log -1 --pretty=%h)"
+VERSION="$(git log -1 --pretty=%h)-${DIST}"
 # docker image name
 IMAGE="opxhub/build"
 # file where container id is saved for cleanup
@@ -21,8 +24,15 @@ main() {
     exit 1
   }
 
-  docker build -t ${IMAGE}:base .
+  docker build -t ${IMAGE}:base -f "Dockerfile-${DIST}" .
   pbuilder_create
+
+  docker tag "${IMAGE}:${VERSION}" "${IMAGE}:${DIST}"
+
+  if [[ "$DIST"b == "$DEFAULT_DIST"b ]]; then
+    echo "Tagging as latest."
+    docker tag "${IMAGE}:${VERSION}" "${IMAGE}:latest"
+  fi
 }
 
 pbuilder_create() {
@@ -41,7 +51,7 @@ pbuilder_create() {
     --cidfile ${CIDFILE} \
     --privileged \
     -e ARCH=amd64 \
-    -e DIST=jessie \
+    -e DIST \
     "${IMAGE}:base" \
     /pbuilder_create.sh
 
@@ -50,8 +60,6 @@ pbuilder_create() {
     --change 'ENTRYPOINT ["/entrypoint.sh"]' \
     "$(cat ${CIDFILE})" \
     "${IMAGE}:${VERSION}"
-
-  docker tag "${IMAGE}:${VERSION}" "${IMAGE}:latest"
 }
 
 main
