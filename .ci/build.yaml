@@ -21,6 +21,6 @@ run:
     version="$(git rev-parse --short HEAD)-$DIST"
     popd
     docker images
-    docker save opxhub/build:latest -o dist/image.tar
+    docker save opxhub/build:$version -o dist/image.tar
     echo $version >dist/version
 
