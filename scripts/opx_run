@@ -12,7 +12,7 @@ export ARCH="${ARCH:-amd64}"
 # docker image name
 IMAGE="opxhub/build"
 # docker image tag
-VERSION="${VERSION:-latest}"
+VERSION="${VERSION:-$DIST}"
 
 interactive="-i"
 if [ -t 1 ]; then

@@ -23,4 +23,5 @@ run:
     docker images
     docker save opxhub/build:$DIST -o dist/image.tar
     echo $version >dist/version
+    echo $DIST >dist/tags
 
