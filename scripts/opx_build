@@ -83,7 +83,7 @@ for r in ${repos[*]}; do
         --git-ignore-new
 
       find "$GIT_PBUILDER_OUTPUT_DIR" \
-        \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' \) \
+        \( -name '*.deb' -o -name '*.dsc' -o -name '*.changes' -o -name '*.tar.gz' -o -name '*.build' -o -name '*.buildinfo' \) \
         -exec cp -t "../$OUTPUT_DIR/" {} +
       echo "Build results can be found in $OUTPUT_DIR."
     fi

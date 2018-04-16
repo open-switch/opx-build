@@ -1,6 +1,8 @@
 FROM debian:stretch
 LABEL maintainer="ops-dev@lists.openswitch.net"
 
+ENV DIST stretch
+
 RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
     build-essential \
     cowbuilder \
@@ -35,8 +37,8 @@ RUN gpg --import /usr/share/keyrings/debian-archive-keyring.gpg \
 
 # Add OPX package sources
 RUN mkdir -p /etc/apt/sources.list.d/ \
- && echo "deb http://deb.openswitch.net/ unstable main opx opx-non-free" >>/etc/apt/sources.list.d/opx.list \
- && echo "deb-src http://deb.openswitch.net/ unstable opx" >>/etc/apt/sources.list.d/opx.list \
+ && echo "deb http://deb.openswitch.net/$DIST unstable main opx opx-non-free" >>/etc/apt/sources.list.d/opx.list \
+ && echo "deb-src http://deb.openswitch.net/$DIST unstable opx" >>/etc/apt/sources.list.d/opx.list \
  && echo "deb http://deb.openswitch.net/contrib stable contrib" >>/etc/apt/sources.list.d/opx.list \
  && apt-get -qq update
 
@@ -47,7 +49,7 @@ RUN mkdir -p /home/opx && chmod -R 777 /home/opx \
  && echo 'Defaults env_keep += "OPX_RELEASE DIST ARCH"' >>/etc/sudoers
 
 # Stops pbuilder create from failing
-RUN mkdir -p /mnt/pool/stretch-amd64 && touch /mnt/pool/stretch-amd64/Packages
+RUN mkdir -p /mnt/pool/${DIST}-amd64 && touch /mnt/pool/${DIST}-amd64/Packages
 
 COPY assets/profile /etc/profile.d/opx.sh
 COPY assets/entrypoint.sh /
