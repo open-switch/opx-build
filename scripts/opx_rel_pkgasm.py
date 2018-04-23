@@ -1083,7 +1083,7 @@ class OpxRelPackageAssembler(object):
                 subprocess.check_call([
                     "sed",
                     "-i",
-                    "s#openswitch.net/ unstable#openswitch.net/ {}#g".format(dist),
+                    "s#openswitch.net/jessie unstable#openswitch.net/jessie {}#g".format(dist),
                     new_hook,
                 ])
 
