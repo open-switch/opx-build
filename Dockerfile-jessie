@@ -1,4 +1,4 @@
-FROM debian:jessie-backports
+ROM debian:jessie-backports
 LABEL maintainer="ops-dev@lists.openswitch.net"
 
 ENV DIST jessie
