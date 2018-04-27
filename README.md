@@ -1,4 +1,4 @@
-# OPX Build
+# OpenSwitch Build Tools
 
 This repository contains build information for OpenSwitch OPX.
 
