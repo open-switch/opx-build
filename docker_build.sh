@@ -50,6 +50,7 @@ pbuilder_create() {
   docker run \
     --cidfile ${CIDFILE} \
     --privileged \
+    --userns=host \
     -e ARCH=amd64 \
     -e DIST \
     "${IMAGE}:base" \
