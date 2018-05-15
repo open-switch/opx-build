@@ -9,7 +9,7 @@ If you would like to download binaries instead, see
 
 ```bash
 # get source code
-repo init -u git://git.openswitch.net/opx/opx-manifest && repo sync
+repo init -u https://github.com/open-switch/opx-manifest && repo sync
 
 # build all open-source packages
 opx-build/scripts/opx_run opx_build all
@@ -30,7 +30,7 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py --dist unstable \
 ### Get source code
 
 ```bash
-repo init -u git://git.openswitch.net/opx/opx-manifest && repo sync
+repo init -u https://github.com/open-switch/opx-manifest && repo sync
 ```
 
 The `repo` commands download all of the source files that are necessary to

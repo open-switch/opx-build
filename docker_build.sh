@@ -1,10 +1,11 @@
 #!/bin/bash -e
+# Currently includes jessie and stretch pbuilder roots
 
+# debian distribution of docker image and default pbuilder root
 DEFAULT_DIST=jessie
-export DIST="${DIST:-$DEFAULT_DIST}"
 
 # docker image tag
-VERSION="$(git log -1 --pretty=%h)-${DIST}"
+VERSION="$(git log -1 --pretty=%h)"
 # docker image name
 IMAGE="opxhub/build"
 # file where container id is saved for cleanup
@@ -24,19 +25,14 @@ main() {
     exit 1
   }
 
-  docker build -t ${IMAGE}:base -f "Dockerfile-${DIST}" .
-  pbuilder_create
-
-  docker tag "${IMAGE}:${VERSION}" "${IMAGE}:${DIST}"
-
-  if [[ "$DIST"b == "$DEFAULT_DIST"b ]]; then
-    echo "Tagging as latest."
-    docker tag "${IMAGE}:${VERSION}" "${IMAGE}:latest"
-  fi
+  docker build -t ${IMAGE}:base -f "Dockerfile-${DEFAULT_DIST}" .
+  pbuilder_create jessie base stamp1
+  pbuilder_create stretch stamp1 "${VERSION}"
+  docker tag "${IMAGE}:${VERSION}" "${IMAGE}:latest"
 }
 
 pbuilder_create() {
-  # Create the pbuilder chroot.
+  # Create the pbuilder chroots.
   #
   # Since pyang is not (yet) available as a debian package, install it
   # in the pbuilder chroot.
@@ -45,21 +41,30 @@ pbuilder_create() {
   # renames fail with a cross-device link error if the directory is on
   # a lower layer. Work around this by combining all steps of chroot
   # creation in one docker run invocation.
+  [[ $# != 3 ]] && return 1
+
+  dist="$1"
+  from_tag="$2"
+  to_tag="$3"
+
   rm -f ${CIDFILE}
 
   docker run \
     --cidfile ${CIDFILE} \
     --privileged \
     -e ARCH=amd64 \
-    -e DIST \
-    "${IMAGE}:base" \
+    -e DIST="$dist" \
+    "${IMAGE}:${from_tag}" \
     /pbuilder_create.sh
 
   docker commit \
     --change 'CMD ["bash"]' \
     --change 'ENTRYPOINT ["/entrypoint.sh"]' \
     "$(cat ${CIDFILE})" \
-    "${IMAGE}:${VERSION}"
+    "${IMAGE}:${to_tag}"
+
+  docker rm -f "$(cat $CIDFILE)"
+  rm -f ${CIDFILE}
 }
 
 main
