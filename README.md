@@ -1,6 +1,6 @@
 # OPX Build
 
-This repository contains build information for OpenSwitch OPX.
+*Build environment and scripts for OpenSwitch.*
 
 If you would like to download binaries instead, see
 [Install OPX on Dell EMC ON Series platforms][install-docs].
