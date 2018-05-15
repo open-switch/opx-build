@@ -5,7 +5,6 @@ ENV DIST jessie
 
 RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
     build-essential \
-    cowbuilder \
     curl \
     debian-archive-keyring \
     debootstrap \
@@ -13,7 +12,6 @@ RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
     dh-systemd \
     fakechroot \
     fakeroot \
-    git-buildpackage \
     lsb-release \
     python-apt \
     python-jinja2 \
@@ -22,7 +20,7 @@ RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
     python-requests \
     vim \
     wget \
- && apt-get -t jessie-backports install -y gosu \
+ && apt-get -t jessie-backports install -y cowbuilder git-buildpackage gosu \
  && apt-get -qq autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Pyang not available as Debian package
@@ -32,8 +30,7 @@ RUN pip2 install pyang requests-file \
 # Get OPX and other Debian GPG keys
 RUN gpg --import /usr/share/keyrings/debian-archive-keyring.gpg \
  && gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-key AD5073F1 \
- && gpg --export AD5073F1 >/usr/share/keyrings/opx-archive-keyring.gpg \
- && apt-key add /usr/share/keyrings/opx-archive-keyring.gpg
+ && gpg --export AD5073F1 >/etc/apt/trusted.gpg.d/opx-archive-keyring.gpg
 
 # Add OPX package sources
 RUN mkdir -p /etc/apt/sources.list.d/ \
@@ -47,9 +44,6 @@ RUN mkdir -p /home/opx && chmod -R 777 /home/opx \
  && echo 'opx ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers \
  && echo '%opx ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers \
  && echo 'Defaults env_keep += "OPX_RELEASE DIST ARCH"' >>/etc/sudoers
-
-# Stops pbuilder create from failing
-RUN mkdir -p /mnt/pool/${DIST}-amd64 && touch /mnt/pool/${DIST}-amd64/Packages
 
 COPY assets/profile /etc/profile.d/opx.sh
 COPY assets/entrypoint.sh /

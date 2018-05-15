@@ -8,7 +8,7 @@
 : ${DIST:="$(lsb_release --short --codename)"}
 : ${ARCH:="$(dpkg --print-architecture)"}
 
-APTKEYRINGS=( /usr/share/keyrings/opx-archive-keyring.gpg )
+APTKEYRINGS=( /etc/apt/trusted.gpg.d/opx-archive-keyring.gpg )
 BINDMOUNTS="/mnt/pool/${DIST}-${ARCH}"
 HOOKDIR=/var/cache/pbuilder/hook.d
 MIRRORSITE=http://deb.debian.org/debian

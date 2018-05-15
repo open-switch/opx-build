@@ -48,9 +48,6 @@ RUN mkdir -p /home/opx && chmod -R 777 /home/opx \
  && echo '%opx ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers \
  && echo 'Defaults env_keep += "OPX_RELEASE DIST ARCH"' >>/etc/sudoers
 
-# Stops pbuilder create from failing
-RUN mkdir -p /mnt/pool/${DIST}-amd64 && touch /mnt/pool/${DIST}-amd64/Packages
-
 COPY assets/profile /etc/profile.d/opx.sh
 COPY assets/entrypoint.sh /
 COPY assets/hook.d /var/cache/pbuilder/hook.d

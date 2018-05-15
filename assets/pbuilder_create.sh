@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 
+mkdir -p "/mnt/pool/${DIST}-${ARCH}" && touch "/mnt/pool/${DIST}-${ARCH}/Packages"
+
 git-pbuilder create
 git-pbuilder update
 cat <<PBUILDER | git-pbuilder login --save-after-login
