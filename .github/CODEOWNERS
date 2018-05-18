@@ -1,0 +1,7 @@
+* @open-switch/operations
+
+*.yang   @open-switch/yang
+*.yhist  @open-switch/yang
+debian/  @open-switch/operations
+*.md     @open-switch/documentation
+.github/ @open-switch/administration
