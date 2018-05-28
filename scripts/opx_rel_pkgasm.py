@@ -1081,9 +1081,17 @@ class OpxRelPackageAssembler(object):
             if hook.hook_file == '98-set-apt-sources.postinst.sh':
                 new_hook = "{}/{}".format(destpath, hook.hook_file)
                 subprocess.check_call([
-                    "sed",
+                    "/bin/sed",
                     "-i",
                     "s#openswitch.net/jessie unstable#openswitch.net/jessie {}#g".format(dist),
+                    new_hook,
+                ])
+            if hook.hook_file == '98-set-apt-sources.stretch.postinst.sh':
+                new_hook = "{}/{}".format(destpath, hook.hook_file)
+                subprocess.check_call([
+                    "/bin/sed",
+                    "-i",
+                    "s#openswitch.net/stretch unstable#openswitch.net/stretch {}#g".format(dist),
                     new_hook,
                 ])
 

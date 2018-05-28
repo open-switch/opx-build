@@ -6,7 +6,7 @@ export OPX_GIT_TAG="${OPX_GIT_TAG:-no}"
 # package distribution
 export OPX_RELEASE="${OPX_RELEASE:-unstable}"
 # currently tracked release
-export DIST="${DIST:-jessie}"
+export DIST="${DIST:-stretch}"
 export ARCH="${ARCH:-amd64}"
 
 # docker image name
