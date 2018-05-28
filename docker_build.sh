@@ -1,9 +1,6 @@
 #!/bin/bash -e
 # Currently includes jessie and stretch pbuilder roots
 
-# debian distribution of docker image and default pbuilder root
-DEFAULT_DIST=jessie
-
 # docker image tag
 VERSION="$(git log -1 --pretty=%h)"
 # docker image name
@@ -25,7 +22,7 @@ main() {
     exit 1
   }
 
-  docker build -t ${IMAGE}:base -f "Dockerfile-${DEFAULT_DIST}" .
+  docker build -t ${IMAGE}:base .
   pbuilder_create jessie base stamp1
   pbuilder_create stretch stamp1 "${VERSION}"
   docker tag "${IMAGE}:${VERSION}" "${IMAGE}:latest"

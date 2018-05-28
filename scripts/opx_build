@@ -15,7 +15,7 @@ export OPX_GIT_TAG="${OPX_GIT_TAG:-no}"
 
 # Set build options
 export OPX_RELEASE="${OPX_RELEASE:-unstable}"
-export DIST="${DIST:-jessie}"
+export DIST="${DIST:-stretch}"
 export ARCH="${ARCH:-amd64}"
 
 # Define list of repositories in dependency order.

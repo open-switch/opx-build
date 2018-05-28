@@ -1,10 +1,12 @@
-FROM debian:jessie-backports
+FROM debian:stretch
 LABEL maintainer="ops-dev@lists.openswitch.net"
 
-ENV DIST jessie
+ENV DIST stretch
 
-RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
+RUN apt-get -qq update && apt-get -qq upgrade -y \
+ && apt-get -qq install -y --no-install-recommends \
     build-essential \
+    cowbuilder \
     curl \
     debian-archive-keyring \
     debootstrap \
@@ -12,15 +14,17 @@ RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install -y \
     dh-systemd \
     fakechroot \
     fakeroot \
+    git-buildpackage \
+    gosu \
     lsb-release \
     python-apt \
     python-jinja2 \
     python-lxml \
     python-pip \
     python-requests \
+    sudo \
     vim \
     wget \
- && apt-get -t jessie-backports install -y cowbuilder git-buildpackage gosu \
  && apt-get -qq autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Pyang not available as Debian package

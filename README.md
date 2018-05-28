@@ -75,6 +75,14 @@ the end of the file `debian/rules`:
 override_dh_strip:
 ```
 
+## Working with Jessie
+
+Our image is based on Debian Stretch. Building packages for Jessie using `opx_build` will continue to work with `DIST=jessie`. To run a container based on Jessie, add `VERSION=jessie` to the environment.
+
+```bash
+VERSION=jessie DIST=jessie opx-build/scripts/opx_run
+```
+
 ## Installation
 
 Creating an installer requires the
