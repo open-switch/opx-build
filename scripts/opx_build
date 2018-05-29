@@ -62,7 +62,7 @@ for r in ${repos[*]}; do
   OUTPUT_DIR="$POOL/$r"
   mkdir -p "$OUTPUT_DIR"
 
-  if [ -e "$r/debian/control" ] && [ ! -e "$r/debian/rules" ]; then
+  if [ -e "$r/DEBIAN/control" ] && [ ! -e "$r/DEBIAN/rules" ]; then
     dpkg-deb -b "$r" "$OUTPUT_DIR"
     echo "Build results can be found in $OUTPUT_DIR."
   elif [ -e "$r/debian/control" ]; then
