@@ -63,6 +63,7 @@ for r in ${repos[*]}; do
   mkdir -p "$OUTPUT_DIR"
 
   if [ -e "$r/DEBIAN/control" ] && [ ! -e "$r/DEBIAN/rules" ]; then
+    chmod 00755 "$r/DEBIAN" || true
     dpkg-deb -b "$r" "$OUTPUT_DIR"
     echo "Build results can be found in $OUTPUT_DIR."
   elif [ -e "$r/debian/control" ]; then
