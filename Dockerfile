@@ -40,7 +40,6 @@ RUN gpg --import /usr/share/keyrings/debian-archive-keyring.gpg \
 RUN mkdir -p /etc/apt/sources.list.d/ \
  && echo "deb http://deb.openswitch.net/$DIST unstable main opx opx-non-free" >>/etc/apt/sources.list.d/opx.list \
  && echo "deb-src http://deb.openswitch.net/$DIST unstable opx" >>/etc/apt/sources.list.d/opx.list \
- && echo "deb http://deb.openswitch.net/contrib stable contrib" >>/etc/apt/sources.list.d/opx.list \
  && apt-get -qq update
 
 # Set up for the user we will create at runtime
