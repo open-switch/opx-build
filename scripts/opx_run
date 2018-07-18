@@ -9,6 +9,8 @@ export OPX_RELEASE="${OPX_RELEASE:-unstable}"
 export DIST="${DIST:-stretch}"
 export ARCH="${ARCH:-amd64}"
 
+export CUSTOM_SOURCES="${CUSTOM_SOURCES:-}"
+
 # docker image name
 IMAGE="opxhub/build"
 # docker image tag
@@ -34,6 +36,7 @@ docker run
   -e DIST
   -e OPX_RELEASE
   -e OPX_GIT_TAG
+  -e CUSTOM_SOURCES
   ${interactive}
   ${IMAGE}:${VERSION}
 EOF
