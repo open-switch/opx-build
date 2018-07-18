@@ -1,17 +1,33 @@
 #!/bin/bash -e
 # Update package sources
 
-echo "deb http://deb.openswitch.net/$DIST $OPX_RELEASE main opx opx-non-free" \
-  >> /etc/apt/sources.list.d/opx.list
+if [[ -n "$CUSTOM_SOURCES" ]]; then
+  echo "$CUSTOM_SOURCES" >/etc/apt/sources.list.d/opx.list
+else
 
-if [[ "$DIST" == "jessie" ]]; then
-  echo "deb http://deb.openswitch.net/contrib stable contrib" \
+  echo "deb http://deb.openswitch.net/$DIST $OPX_RELEASE main opx opx-non-free" \
     >> /etc/apt/sources.list.d/opx.list
+
+  if [[ "$DIST" == "jessie" ]]; then
+    echo "deb http://deb.openswitch.net/contrib stable contrib" \
+      >> /etc/apt/sources.list.d/opx.list
+  fi
+
+  if [[ "$OPX_RELEASE" =~ ^(unstable|testing|stable)$ ]]; then
+    echo "deb-src http://deb.openswitch.net/$DIST $OPX_RELEASE opx" \
+      >>/etc/apt/sources.list.d/opx.list
+  fi
+
 fi
 
-if [[ "$OPX_RELEASE" =~ ^(unstable|testing|stable)$ ]]; then
-  echo "deb-src http://deb.openswitch.net/$DIST $OPX_RELEASE opx" \
-    >>/etc/apt/sources.list.d/opx.list
-fi
+echo "Updating with the following sources:
 
+/etc/apt/sources.list
+---------------------
+$(cat /etc/apt/sources.list)
+
+/etc/apt/sources.list.d/opx.list
+--------------------------------
+$(cat /etc/apt/sources.list.d/opx.list)
+"
 apt-get -qq update

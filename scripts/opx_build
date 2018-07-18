@@ -17,6 +17,7 @@ export OPX_GIT_TAG="${OPX_GIT_TAG:-no}"
 export OPX_RELEASE="${OPX_RELEASE:-unstable}"
 export DIST="${DIST:-stretch}"
 export ARCH="${ARCH:-amd64}"
+export CUSTOM_SOURCES="${CUSTOM_SOURCES:-}"
 
 # Define list of repositories in dependency order.
 # TODO: read the debian/control files and compute the dependency graph.
