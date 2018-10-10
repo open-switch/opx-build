@@ -5,6 +5,7 @@ mkdir -p "/mnt/pool/${DIST}-${ARCH}" && touch "/mnt/pool/${DIST}-${ARCH}/Package
 git-pbuilder create
 git-pbuilder update
 cat <<PBUILDER | git-pbuilder login --save-after-login
+apt-key adv --fetch-keys http://deb.openswitch.net/opx.asc
 apt-get install -y curl git python-lxml python-pip
 
 pip install pyang
