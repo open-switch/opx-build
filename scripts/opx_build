@@ -47,6 +47,7 @@ opx-tmpctl
 opx-tools
 opx-alarm
 opx-snmp
+opx-system-utils
 )
 
 if [ $# -gt 0 ] && [ "$1" != "all" ]; then
