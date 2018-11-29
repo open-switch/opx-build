@@ -597,8 +597,6 @@ class OpxRelBlueprint(object):
             'package_cache': _str2bool(output_elem.find('package_cache').text),
         }
 
-        output_format['version'] = dist
-
         package_sets = []
         for package_set_elem in elem.findall('package_set'):
             package_sets.append(OpxRelPackageSet.fromElement(package_set_elem))
