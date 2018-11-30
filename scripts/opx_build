@@ -48,6 +48,7 @@ opx-tools
 opx-alarm
 opx-snmp
 opx-system-utils
+opx-dhcp-agent
 )
 
 if [ $# -gt 0 ] && [ "$1" != "all" ]; then
