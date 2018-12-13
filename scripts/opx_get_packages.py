@@ -209,7 +209,8 @@ class OpxPackages(object):
 
         # create apt preferences file to always use local packages
         with open(os.path.join(self._folder, "etc", "apt", "preferences"), "w") as f:
-            f.write('Package: *\nPin: origin ""\nPin-Priority: 1001\n')
+            f.write('Package: *\nPin: origin ""\nPin-Priority: 1100\n\n')
+            f.write('Package: *\nPin: origin "deb.openswitch.net"\nPin-Priority: 750\n\n')
 
         # create cache and update it
         self._cache = apt.Cache(rootdir=self._folder, memonly=True)
