@@ -1,4 +1,4 @@
-# OPX Build
+# OPX build
 
 *Build environment and scripts for OpenSwitch.*
 
@@ -118,25 +118,29 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py --dist stable \
 ```
 
 The default Docker image builds against the unstable OPX distribution. When
-other distributions are requested, pbuidler chroots are created on the fly.
+other distributions are requested, pbuilder chroots are created on the fly.
 These chroots are lost when the container is removed, but only take 7.5sec to
 create.
 
-## Docker Image Architecture
+## Docker image architecture
 
 Since `git-buildpackage` with `cowbuilder` is used to build our packages, a
 pbuilder chroot is created in the image. Due to an issue with
 docker/kernel/overlayfs/pbuilder, the pbuilder chroot is created by running a
-privileged base container and committing it. To keep the image size small, only
+privileged base container and committing it. 
+
+To keep the image size small, only
 one chroot is created. This chroot contains sources from the unstable OPX
 release. To support building against multiple OPX releases, this chroot is
 copied and modified as needed with new package sources at runtime (when the
-`OPX_RELEASE` variable is used). When publishing our image, we use a tag with
+`OPX_RELEASE` variable is used). 
+
+When publishing our image, we use a tag with
 the format `${sha}-${dist}`, where `${sha}` is the HEAD of this repository and
 `${dist}` is the Debian distribution of the pbuilder chroot. The `latest` tag
 always point to the most recently published image.
 
-## Build Options
+## Build options
 
 These environment variables enable different options.
 
