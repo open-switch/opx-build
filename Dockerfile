@@ -32,9 +32,9 @@ RUN pip2 install pyang requests-file \
  && ln -s /usr/local/bin/pyang /usr/bin
 
 # Get OPX and other Debian GPG keys
-RUN gpg --batch --import /usr/share/keyrings/debian-archive-keyring.gpg \
- && gpg --batch --keyserver hkp://keyserver.ubuntu.com:80 --recv-key AD5073F1 \
- && gpg --batch --export AD5073F1 >/etc/apt/trusted.gpg.d/opx-archive-keyring.gpg
+RUN gpg --import /usr/share/keyrings/debian-archive-keyring.gpg \
+ && gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-key AD5073F1 \
+ && gpg --export AD5073F1 >/etc/apt/trusted.gpg.d/opx-archive-keyring.gpg
 
 # Add OPX package sources
 RUN mkdir -p /etc/apt/sources.list.d/ \
