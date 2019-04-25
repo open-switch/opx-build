@@ -118,7 +118,7 @@ opx-build/scripts/opx_run opx_rel_pkgasm.py --dist stable \
 ```
 
 The default Docker image builds against the unstable OPX distribution. When
-other distributions are requested, pbuidler chroots are created on the fly.
+other distributions are requested, pbuilder chroots are created on the fly.
 These chroots are lost when the container is removed, but only take 7.5sec to
 create.
 
