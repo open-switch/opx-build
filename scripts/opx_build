@@ -36,6 +36,7 @@ opx-nas-ndi-api
 opx-nas-ndi
 opx-nas-acl
 opx-nas-interface
+opx-nas-multicast
 opx-nas-l2
 opx-nas-l3
 opx-nas-qos
