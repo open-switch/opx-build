@@ -559,12 +559,17 @@ class OpxRelBlueprint(object):
         Construct :class:`OpxRelBlueprint` object from :class:`etree.Element`
         """
 
-        description = elem.find('description').text
-        package_type = elem.find('package_type').text
-        platform = elem.find('platform').text
-        architecture = elem.find('architecture').text
-        installer_suffix = elem.find('installer_suffix').text
-        version = elem.find('version').text
+        try:
+            description = elem.find('description').text
+            package_type = elem.find('package_type').text
+            platform = elem.find('platform').text
+            architecture = elem.find('architecture').text
+            installer_suffix = elem.find('installer_suffix').text
+            version = elem.find('version').text
+        except AttributeError:
+            print("We were unable to find a required value in the XML. Verify the blueprint XML provides the following "
+                  "values:\n- description\n- package_type\n- platform\n- architecture\n- installer_suffix\n- version")
+            sys.exit(1)
 
         rootfs_elem = elem.find('rootfs')
         rootfs = {
