@@ -16,7 +16,11 @@ opx-build/scripts/opx_run opx_build all
 
 # assemble installer
 opx-build/scripts/opx_run opx_rel_pkgasm.py --dist unstable \
-  -b opx-onie-installer/release_bp/OPX_dell_base.xml
+  -b opx-onie-installer/release_bp/OPX_dell_base_<ARCH>.xml
+
+Ex:
+opx-build/scripts/opx_run opx_rel_pkgasm.py --dist unstable \
+  -b opx-onie-installer/release_bp/OPX_dell_base_stretch.xml
 ```
 
 ## Getting started with OpenSwitch
