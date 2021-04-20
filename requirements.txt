@@ -1,4 +1,4 @@
 requests>=2.20.0
 Jinja2>=2.10.1
-lxml==4.6.2
+lxml==4.6.3
 requests_file==1.4.2
